@@ -114,8 +114,7 @@ def point_add(point1, point2):
 
     x3 = m * m - x1 - x2
     y3 = y1 + m * (x3 - x1)
-    result = (x3 % curve.p,
-              -y3 % curve.p)
+    result = (x3 % curve.p, -y3 % curve.p)
 
     assert is_on_curve(result)
 
