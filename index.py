@@ -35,7 +35,7 @@ def index():
 
     a = -1
     b = 1
-    min = -1 * 10**78
+    min = 0
     max =  1.2 *  10**78
     
     y,x = np.ogrid[ min:max:10**78, min:max:10**78 ]
@@ -133,7 +133,7 @@ def mod_add():
 
     a = -1
     b = 1
-    min = -1 * 10**78
+    min = 0
     max =  1.2 *  10**78
     
     y,x = np.ogrid[ min:max:10**78, min:max:10**78 ]
