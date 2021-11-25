@@ -26,12 +26,10 @@
       </nav>
     </header>
     <main>
-      <!--<div id="plot" class="box"></div> -->
+      <!--<div id="plot" class="box"></div>-->
       <div class="graph" id="graph-box">
 
-        <script>
-            
-        </script>
+        <img src="data:image/png;base64, {{ figure }}" alt="Graph" width="100%" height="100%" />
 
       </div>
 
@@ -75,6 +73,21 @@
               <input id="point-r-y" name="ry" step="any" readonly></div>
           </div>
         </div>
+        <div id="g-point">
+          <div id="point-g-coordinates" class="parameters">
+            <p><em>G</em>:</p><br/>
+            <div class="parameter point-coordinate">
+              <label for="point-g-x">x</label>
+              <input id="point-g-x" name="gx" readonly value="55066263022277343669578718895168534326250603453777594175500187360389116729240" type="number" step="1">
+            </div>
+            <div class="parameter point-coordinate">
+              <label for="point-q-y">y</label>
+              <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
+            </div>
+          </div>
+          Line passes through G? 
+          <button>{{ gpointText}} </button>
+        </div>
         <div id="summary">
           <p>Point addition over the elliptic curve <span class="curve-equation"></span> in &#120125;<sub class="field-order"></sub>.</p>
           <p>The curve has <span class="curve-order"></span> points (including the point at infinity).</p>
@@ -93,6 +106,32 @@
         });
     </script>
     <script>
+      $(document).ready(function(){
+
+        let _px = document.getElementById("point-p-x").value
+        let _py = document.getElementById("point-p-y").value
+        let _qx = document.getElementById("point-q-x").value
+        let _qy = document.getElementById("point-q-y").value
+
+        $.ajax({
+          url: '/',
+          data: {
+            px: _px,
+            py: _py,
+            qx: _qx,
+            qy: _qy
+          },
+          type: 'GET',
+          success: function(response){
+            console.log("response",response)
+          }, 
+          error: function(error){
+              console.log("error",error)
+          }
+        })
+
+      })
+
       document.getElementsByName("px")[0].addEventListener('change', pxChanged)
       function pxChanged(e){
         //Send px value to index.py
