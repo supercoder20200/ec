@@ -20,6 +20,14 @@ import base64
 
 app = Flask(__name__)
 
+def getLinePoints():
+
+    return [ [(0,6), (0,250)], [(0,0), (0,0)], [(0,0),(0,0)], [(0,0),(0,0)], [(0,1), (0,0)]]
+
+def getCurvePoints():
+
+    return [ [(0,0),(0,0)]]
+
 @app.route('/')
 def index():
     img = io.BytesIO()
@@ -38,7 +46,7 @@ def index():
     min = 0
     max =  1.2 *  10**78
     
-    y,x = np.ogrid[ min:max:10**78, min:max:10**78 ]
+    y,x = np.ogrid[ min:max:0.2 * 10**78, min:max:0.2 * 10**78 ]
     print("Ravel")
 
     fig = plt.figure()
@@ -56,13 +64,24 @@ def index():
     #ax.xaxis.set_minor_locator(AutoMinorLocator(4))
     #ax.yaxis.set_minor_locator(AutoMinorLocator(4))
 
+     #Points Annotation
     plt.annotate("P", (DefaultPx, DefaultPy))
     plt.annotate("Q", (DefaultQx, DefaultQy))
     plt.annotate("R", (Rx, Ry))
     plt.annotate("G", (DefaultGx, DefaultGx))
 
-    sx = [DefaultPx, DefaultQx, DefaultGx]
-    sy = [DefaultPy, DefaultQy, DefaultGy]
+    #Scatter Plot
+    sx = [DefaultPx, DefaultQx, DefaultGx, Rx]
+    sy = [DefaultPy, DefaultQy, DefaultGy, Ry]
+
+    scolors = ['red', 'green', 'blue', 'purple']
+    plt.scatter(DefaultPx, DefaultPy, color=scolors[0])
+    plt.scatter(DefaultQx, DefaultQy, color=scolors[1])
+    plt.scatter(DefaultGx, DefaultGy, color=scolors[2])
+    plt.scatter(Rx, Ry, color=scolors[3])
+
+    #Check if G intersects
+    #is_on_curve(DefaultGx, DefaultGy)
 
     plt.savefig(img, format='png')
     plt.close()
@@ -150,13 +169,13 @@ def mod_add():
     ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
     ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
 
-    plt.annotate("P", (DefaultPx, DefaultPy))
-    plt.annotate("Q", (DefaultQx, DefaultQy))
+    plt.annotate("P", (Px, Py))
+    plt.annotate("Q", (Qx, Qy))
     plt.annotate("R", (Rx, Ry))
-    plt.annotate("G", (DefaultGx, DefaultGx))
+    #plt.annotate("G", (DefaultGx, DefaultGx))
 
-    sx = [DefaultPx, DefaultQx, DefaultGx]
-    sy = [DefaultPy, DefaultQy, DefaultGy]
+    sx = [Px, Qx, Rx]
+    sy = [Py, Qy, Ry]
 
     plt.savefig(img, format='png')
     plt.close()
