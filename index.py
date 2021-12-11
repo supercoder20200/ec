@@ -16,74 +16,454 @@ import json
 import io
 import random
 import base64 
+import matplotlib.lines as mlines
+from matplotlib.ticker import MaxNLocator
+import math
 
+P1x = 73310771008388540988256401357661415352304042095800324289366824950562794967684
+P1y = 25612579043039068451963311536261134020656877051603969401472335406669199866075
+Q1x = 48176182141707200397494489313819525051007048199980929464227639919183476022336
+Q1y = 98296285486814584365400012414991623642713198288787606628925957970725125646703
+
+P2x = 30666395314038636955251611877485727881264700062477752893228546022664438539836
+P2y = 48756134551913896629494075854379340404881830235582095792160845931170832701583
+Q2x = 45087122387471313123709619831609313851158046550223851204564586419255362513023
+Q2y = 109339096676174093123610108599832585430504556221366403962193541220247390950753
+
+P3x = 19529594405183429431769641698934855993594712781427083362133146204539138151596
+P3y = 82775025087699545192812941522217722457926439501598540605610417946894027764418
+Q3x = 111603070862711183124013446573783364289491092943582729801892522125682238345535
+Q3y = 57515944028028858999360957506841015828304026625088010987126409447424932181677
+
+P4x = 55066263022277343669578718895168534326250603453777594175500187360389116729240
+P4y = 83121579216557378445487899878180864668798711284981320763518679672151497189239
+Q4x = 89565891926547004231252920425935692360644145829622209833684329913297188986597
+Q4y = 12158399299693830322967808612713398636155367887041628176798871954788371653930
+
+P5x = 49882918176856605183996093635109791033720065193759947705189250698360422403343
+P5y = 87579154732488152196412440363928154660028982303670293471050882565505776325455
+Q5x = 20492960541290307740821338613687217499731143618862861387631654218377231482582
+Q5y = 67711064672408904786252786661545947703563490276329446296505645734325680519952
+
+P6x = 52520157252336559685764725849242661731349909832028725108762837189691969715817
+P6y = 35156572455267097799899517596807687333077141162180756329654631887468580805293
+Q6x = 3956348602796439307740117187045434825700000342027208134063490177605197310844
+Q6y = 78664996595258961789412901856290575890387424745742185933082277791245584623976
+
+P7x = 23861131201851207810434022929743236790072622423728145265202521067677451190953
+P7y = 56366276049751685336515781269824299647550048100380482333954076907946287728057
+Q7x = 100309494246410138818135350310029905004028001819361899828781733221271966068009
+Q7y = 115111448751665247878033032003033566886632067100284258391085181899257104406292
+
+Gx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
+Gy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
+
+nGx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
+nGy = 83121579216557378445487899878180864668798711284981320763518679672151497189239
 
 app = Flask(__name__)
 
-def getLinePoints():
+k = 97
+a = 0
+b = 7
 
-    return [ [(0,6), (0,250)], [(0,0), (0,0)], [(0,0),(0,0)], [(0,0),(0,0)], [(0,1), (0,0)]]
+P= (2**256) - (2**32) - (2**9) - (2**8) - (2**7) - (2**6) - (2**4) - 1
+#115792089237316195423570985008687907853269984665640564039457584007908834671663
+#0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
+A=0
+B=7
 
-def getCurvePoints():
+xMin = 0
+xMax = 1.2 * (10 ** 77)
+yMin = 0
+yMax = 1.2 * (10 ** 77 )
 
-    return [ [(0,0),(0,0)]]
+def extended_euclidean_algorithm(a, b):
+    if a == 0 :  
+        return b,0,1
+             
+    gcd,x1,y1 = extended_euclidean_algorithm(b%a, a) 
+     
+    x = y1 - (b//a) * x1 
+    y = x1 
+     
+    return gcd,x,y
+
+def inverse_of(n):
+    if(n < 0):
+        n += P
+    gcd, x, y = extended_euclidean_algorithm(n, P)
+    #assert (n * x + p * y) % p == gcd
+
+    if gcd != 1:
+        raise ValueError(
+            '{} has no multiplicative inverse '
+            'modulo {}'.format(n, P))
+    else:
+        return x % P
+
+def inverseOf(n):
+    n = ( +n ) % P
+
+    if( n < 0 ):
+        n = n + P
+
+    for m in range(0, P-1,1):
+        if( ( n * m ) % P == 1 ):
+            return m
+
+    raise ValueError(
+            '{} has no multiplicative inverse '
+            'modulo {}'.format(n, p))
+
+class Point:
+    def __init__(self, p, x=float('inf'), y=float('inf')):
+        self.p = p
+        self.x = x % p
+        self.y = y % p
+        
+    def __repr__(self):
+        return "Point(p={}, x={}, y={})".format(self.p, self.x, self.y)
+    
+    def __add__(self, other):
+        assert type(other) is Point
+        if self.x == other.x and self.y == other.y:
+            return self.double()
+        dx = other.x - self.x
+        dy = other.y - self.y
+        if dx == 0:
+            return Point()
+        slope = (dy * inverse_of(dx)) % self.p
+        
+        x = (slope ** 2) - self.x - other.x
+        y = slope * x + (self.y - slope * self.x)
+        x %= self.p
+        y %= self.p
+        return Point(self.p, x, -y)
+    
+    def double(self):
+        slope = (3 * (self.x ** 2) + A) * inverse_of(2 * self.y)
+        x = (slope ** 2) - (2 * self.x)
+        y = slope * x + (self.y - slope * self.x)
+        x %= self.p
+        y %= self.p
+        return Point(self.p, x, -y)
+    
+    def oppsite(self):
+        return Point(self.p, self.x, -self.y)
+    
+    def np(self):
+        return np.array([self.x, self.y])
+
+def enumerate_points(p):
+    for x in range(p):
+        for y in range(p):
+            if (y ** 2) % p == ((x ** 3) + A * x + B) % p:
+                yield (x, y)
+
+def plot_curve(p, a, b, ax, point_sizes, point_colors):
+    points = list(enumerate_points(p))
+    points = np.array(points)
+
+    ax.scatter(
+        points[:,0],
+        points[:,1],
+        list(map(lambda p: point_sizes.get(tuple(p), 10), points)),
+        list(map(lambda p: point_colors.get(tuple(p), 'gray'), points)),
+        zorder=5,
+    )
+    
+    ax.set_axisbelow(True)
+    ax.grid()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    #ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
+    #ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
+    #ax.tick_params(axis='both', which='major', labelsize=6)
+   
+    ax.set_ylim(top=yMax)
+    ax.set_ylim(bottom=yMin)
+    ax.set_xlim(left=xMin)
+    ax.set_xlim(right=xMax )
+    
+
+def point_distance(p0, p1):
+    return ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5
+ 
+def wrap_line_segments(p0, p1):
+    
+    p0x, p0y = p0
+    p1x, p1y = p1
+    
+    dx = p1x - p0x
+    dy = p1y - p0y
+    slope = dy / dx
+    
+    # index of block where line touches axis
+    x_axis_start_idx = math.ceil(p0y / P)
+    x_axis_end_idx = math.floor(p1y / P)
+    y_axis_start_idx = math.ceil(p0x / P)
+    y_axis_end_idx = math.floor(p1x / P)
+    
+    # x value is increasing
+    if dx >= 0:
+        # The value we are using on the y axis edge for end and start
+        y_edge = (P, 0)
+        # The x values on y axis
+        y_axis_stops = list(map(lambda x: x * P, range(y_axis_start_idx, y_axis_end_idx + 1)))
+    # x value is decreasing
+    else:
+        # The value we are using on the y axis edge for end and start
+        y_edge = (0, P)
+        # The x values on y axis
+        y_axis_stops = list(map(lambda x: x * P, range(y_axis_start_idx - 1, y_axis_end_idx, -1)))
+
+    # y value is increasing
+    if dy >= 0:
+        # The value we are using on the x axis edge for end and start
+        x_edge = (P, 0)
+        # The x values on y axis
+        x_axis_stops = list(map(lambda y: y * P, range(x_axis_start_idx, x_axis_end_idx + 1)))
+    # y value is decreasing
+    else:
+        # The value we are using on the x axis edge for end and start
+        x_edge = (0, P)
+        # The x values on y axis
+        x_axis_stops = list(map(lambda y: y * P, range(x_axis_start_idx - 1, x_axis_end_idx, -1)))
+    
+    # The points on x axis
+    x_axis_stop_points = list(map(lambda y: (p0x + (y - p0y) / slope, y), x_axis_stops))
+    # The points on y axis
+    y_axis_stop_points = list(map(lambda x: (x, p0y + (x - p0x) * slope), y_axis_stops))
+    
+    last_point = p0
+    
+    while len(x_axis_stop_points) or len(y_axis_stop_points):
+        x_axis_stop_point = None
+        y_axis_stop_point = None
+        if x_axis_stop_points: 
+            x_axis_stop_point = x_axis_stop_points[0]
+        if y_axis_stop_points:
+            y_axis_stop_point = y_axis_stop_points[0]
+        
+        if x_axis_stop_point == y_axis_stop_point:
+            pass
+
+        if x_axis_stop_point is not None and y_axis_stop_point is not None:
+            # Distance from point on x axis to starting point
+            x_axis_distance = point_distance(x_axis_stop_point, p0)
+            # Distance from point on y axis to starting point
+            y_axis_distance = point_distance(y_axis_stop_point, p0)
+        # No more points on x axis, just pick y axis point
+        elif x_axis_stop_point is None:
+            x_axis_distance = 1
+            y_axis_distance = 0
+        # No more points on y axis, just pick x axis point
+        elif y_axis_stop_point is None:
+            x_axis_distance = 0
+            y_axis_distance = 1
+        
+        if x_axis_distance < y_axis_distance:
+            x_axis_stop_points.pop(0)
+            yield (last_point, (x_axis_stop_point[0] % P, x_edge[0]))
+            last_point = (x_axis_stop_point[0] % P, x_edge[1])
+        else:
+            y_axis_stop_points.pop(0)
+            yield (last_point, (y_edge[0], y_axis_stop_point[1] % P))
+            last_point = (y_edge[1], y_axis_stop_point[1] % P)
+    
+    yield (last_point, (p1[0] % P, p1[1] % P))
+
+def plot_distinct_point_curve(p0, p1, p0_annotation, p1_annotation, third_point_annotation, sum_point_annotation):
+    #rpoint
+   
+    rvalue = RValue( (p0.x, p0.y), (p1.x, p1.y) )
+    p2 = Point(P, rvalue[0], rvalue[1])
+    #print("P2: {}".format(p2))
+    #p2 = p0 + p1
+   
+
+    fig, ax = plt.subplots()
+
+    plot_curve(
+        P, A, B, ax,
+        {(p0.x, p0.y): 30, (p1.x, p1.y): 30, (p2.x, p2.y): 30},
+        {(p0.x, p0.y): 'b', (p1.x, p1.y): 'b', (p2.x, p2.y): 'orange'},
+    )
+
+    dx = p1.x - p0.x
+    dy = p1.y - p0.y
+
+    
+    dx_dy_gcd = math.gcd(dx, dy)
+    dx = int(dx / dx_dy_gcd)
+    dy = int(dy / dx_dy_gcd)
+
+    current_increasing_x = p0.x
+    current_increasing_y = p0.y
+    current_decreasing_x = p1.x
+    current_decreasing_y = p1.y
+    p2_flip = -p2.y % P
+
+
+    while True:
+        current_increasing_x += dx
+        current_increasing_y += dy
+       
+        if (current_increasing_x % P) == p2.x and (current_increasing_y % P) == p2_flip:
+            line_stop = (current_increasing_x, current_increasing_y)
+            line_start = (p0.x, p0.y)
+            break
+        current_decreasing_x -= dx
+        current_decreasing_y -= dy
+     
+        if (current_decreasing_x % P) == p2.x and (current_decreasing_y % P) == p2_flip:
+            line_stop = (current_decreasing_x, current_decreasing_y)
+            line_start = (p1.x, p1.y)
+            break
+    
+    line_points = list(wrap_line_segments(line_start, line_stop))
+    for line_point0, line_point1 in line_points:
+        ax.add_line(mlines.Line2D(
+            [line_point0[0], line_point1[0]],
+            [line_point0[1], line_point1[1]],
+            color='r',
+            zorder=1,
+        ))
+
+    ax.annotate(p0_annotation, xy=p0.np(), xytext=(-5, 5), textcoords='offset points', zorder=10)
+    ax.annotate(p1_annotation, xy=p1.np(), xytext=(-5, 5), textcoords='offset points', zorder=10)
+    ax.annotate(sum_point_annotation, xy=p2.np(), xytext=(-5, 5), textcoords='offset points', zorder=10)
+
+    ax.add_line(mlines.Line2D(
+        [p2.x, p2.x],
+        [p2.y, p2_flip],
+        color='g',
+        zorder=1,
+    ))
+    
+    #plt.show()
+
+def is_on_linepoint(p0,p1):
+    #rpoint
+    rvalue = RValue( (p0.x, p0.y), (p1.x, p1.y) )
+    p2 = Point(P, rvalue[0], rvalue[1])
+    #p2 = p0 + p1
+
+    dx = p1.x - p0.x
+    dy = p1.y - p0.y
+    
+    dx_dy_gcd = math.gcd(dx, dy)
+    dx = int(dx / dx_dy_gcd)
+    dy = int(dy / dx_dy_gcd)
+    
+    current_increasing_x = p0.x
+    current_increasing_y = p0.y
+    current_decreasing_x = p1.x
+    current_decreasing_y = p1.y
+    p2_flip = -p2.y % P
+
+    while True:
+        current_increasing_x += dx
+        current_increasing_y += dy
+        if (current_increasing_x % P) == p2.x and (current_increasing_y % P) == p2_flip:
+            line_stop = (current_increasing_x, current_increasing_y)
+            line_start = (p0.x, p0.y)
+            break
+        current_decreasing_x -= dx
+        current_decreasing_y -= dy
+        if (current_decreasing_x % P) == p2.x and (current_decreasing_y % P) == p2_flip:
+            line_stop = (current_decreasing_x, current_decreasing_y)
+            line_start = (p1.x, p1.y)
+            break
+    
+    line_points = list(wrap_line_segments(line_start, line_stop))
+    
+    for line_point0, line_point1 in line_points:
+        x1,y1 = line_point0
+        x2,y2 = line_point1
+        print("Line Points: {} {} {} {}".format(x1, y1, x2, y2))
+        print("G is on line points : {}".format(is_on_line(x1, y1, x2, y2, Gx, Gy)))
+
+def is_on_line(x1, y1, x2, y2, x3, y3):
+    slope = (y2 - y1) / (x2 - x1)
+    return y3 - y1 == slope * (x3 - x1)
+
+def is_on_curve(x, y):
+    if x is None or y is None:
+        return True
+    return (y * y - x * x * x - a * x - b) % P == 0
+
+#print (is_on_curve( () ) )
+
+def slope(P,Q):
+    Px, Py = P 
+    Qx, Qy = Q
+    return Qy - Py / Qx - Px
 
 @app.route('/')
 def index():
+    print("Showing ....")
     img = io.BytesIO()
-
+    
     DefaultPx = 76713794182478803891528803692822015505111471502816304530189645921738551553824
     DefaultPy = 9989913769501776956673418849599695616596036032394306022682365229231505097463
     DefaultQx = 49396472789695839840842700318753929600130929079169291199003099305862335813206
-    DefaultQy = 6721877582892931413141315114289651970823246064430791708367976298368088092295
+    DefaultQy = 67218775828929314131413151142896519708232460644307917083679762983680880922954
     Rx, Ry = RValue( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
-
     DefaultGx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
     DefaultGy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
 
-    a = -1
-    b = 1
-    min = 0
-    max =  1.2 *  10**78
-    
-    y,x = np.ogrid[ min:max:0.2 * 10**78, min:max:0.2 * 10**78 ]
-    print("Ravel")
-
     fig = plt.figure()
     ax = fig.add_subplot(111)
-
-    plt.contour(x.ravel(), y.ravel(), y**2 - x**3 - x * a -b, [0])
     plt.grid()
-    
-    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
-    ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
+
+    print("Showing Index Pages 3")
+
+    ax.set_ylim(top=yMax)
+    ax.set_ylim(bottom=yMin)
+    ax.set_xlim(left=xMin)
+    ax.set_xlim(right=xMax)
+
+    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
+    ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
     ax.tick_params(axis='both', which='major', labelsize=6)
 
-    #ax.set_xticks( np.arange(min,max, 1 * 10**77) )
-    #ax.set_xticks( np.arange(min,max, 0.1 * 10**77), minor=True )
-    #ax.xaxis.set_minor_locator(AutoMinorLocator(4))
-    #ax.yaxis.set_minor_locator(AutoMinorLocator(4))
-
-     #Points Annotation
+    #Points Annotation
     plt.annotate("P", (DefaultPx, DefaultPy))
     plt.annotate("Q", (DefaultQx, DefaultQy))
+    plt.annotate("G", (DefaultGx, DefaultGy))
+    plt.annotate("-G", (DefaultGx, P - DefaultGy))
     plt.annotate("R", (Rx, Ry))
-    plt.annotate("G", (DefaultGx, DefaultGx))
-
-    #Scatter Plot
-    sx = [DefaultPx, DefaultQx, DefaultGx, Rx]
-    sy = [DefaultPy, DefaultQy, DefaultGy, Ry]
-
-    scolors = ['red', 'green', 'blue', 'purple']
+    plt.annotate("-R", (Rx, P-Ry))
+    
+    scolors = ['red', 'green', 'blue', 'purple','black','orange']
     plt.scatter(DefaultPx, DefaultPy, color=scolors[0])
     plt.scatter(DefaultQx, DefaultQy, color=scolors[1])
     plt.scatter(DefaultGx, DefaultGy, color=scolors[2])
-    plt.scatter(Rx, Ry, color=scolors[3])
+    plt.scatter(DefaultGx, P-DefaultGy, color=scolors[3])
+    plt.scatter(Rx, Ry, color=scolors[4])
+    plt.scatter(Rx, P-Ry, color=scolors[5])
+
+    print("Px, Qx: {:.2e} {:.2e}".format(DefaultPx, DefaultQx))
+
+    xx = [P1x, Q1x]
+    yy = [P1y, Q1y]
+    plt.plot(xx, yy)
 
     #Check if G intersects
     #is_on_curve(DefaultGx, DefaultGy)
 
+    #sampleP = Point(P, 3, 2 )
+    #sampleQ = Point(P, 5, 18)
+    sampleP = Point(P, DefaultPx, DefaultPy)
+    sampleQ = Point(P, DefaultQx, DefaultQy)
+
+    #c = Point(P, 10, 14)
+    #plot_distinct_point_curve(sampleP, sampleQ, 'P', 'Q', '', 'R(P + Q)')
     plt.savefig(img, format='png')
+    
     plt.close()
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
@@ -117,6 +497,7 @@ def RValue(P,Q):
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
     Px,Py = P 
     Qx,Qy = Q
+
     if Px == Qx:
         Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
     else:
@@ -150,20 +531,9 @@ def mod_add():
     Ry = Py + Delta * (Rx - Px)
     Ry = -Ry % p
 
-    a = -1
-    b = 1
-    min = 0
-    max =  1.2 *  10**78
-    
-    y,x = np.ogrid[ min:max:10**78, min:max:10**78 ]
-    print("Ravel")
-    #print(x.ravel())
-    #print(y.ravel())
-
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    plt.contour(x.ravel(), y.ravel(), y**2 - x**3 - x * a -b, [0])
     plt.grid()
     
     ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
@@ -184,16 +554,52 @@ def mod_add():
     
     return jsonify({'rx': str(Rx), 'ry': str(Ry), 'figure': plot_url  })
 
-def is_on_curve(self, x, y):
-    a = 0
-    b = 7
-    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
-    if x is None or y is None:
-        return True
-    return (y * y - x * x * x - a * x - b) % p == 0
-
-def y_value(x):
-    return sqrt(x**3 + 7)
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    
+    print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
+    print("-G is on the curve: {} ".format(is_on_curve(nGx, nGy)))
+
+    print("P1 is on the curve: {} ".format(is_on_curve(P1x, P1y)))
+    print("Q1 is on the curve: {} ".format(is_on_curve(Q1x, Q1y)))
+    PQ1 = RValue( (P1x, P1y), (Q1x, Q1y) )
+    print("R1 = P1 + Q1 is on the curve: {} ".format(is_on_curve( PQ1[0], PQ1[1] )))
+    print("-R1 = nP1 + nQ1 is on the curve: {} ".format(is_on_curve( PQ1[0], P - PQ1[1] )))
+
+    print("P2 is on the curve: {} ".format(is_on_curve(P2x, P2y)))
+    print("Q2 is on the curve: {} ".format(is_on_curve(Q2x, Q2y)))
+    PQ2 = RValue( (P2x, P2y), (Q2x, Q2y) )
+    print("R2 = P2 + Q2 is on the curve: {} ".format(is_on_curve( PQ2[0], PQ2[1] )))
+    print("-R2 is on the curve: {} ".format(is_on_curve( PQ2[0], P - PQ2[1] )))
+
+    print("P3 is on the curve: {} ".format(is_on_curve(P3x, P3y)))
+    print("Q3 is on the curve: {} ".format(is_on_curve(Q3x, Q3y)))
+    PQ3 = RValue( (P3x, P3y), (Q3x, Q3y) )
+    print("R3 = P3 + Q3 is on the curve: {} ".format(is_on_curve( PQ3[0], PQ3[1] )))
+    print("-R3 = P3 + Q3 is on the curve: {} ".format(is_on_curve( PQ3[0], P - PQ3[1] )))
+
+    print("P4 is on the curve: {} ".format(is_on_curve(P4x, P4y)))
+    print("Q4 is on the curve: {} ".format(is_on_curve(Q4x, Q4y)))
+    PQ4 = RValue( (P4x, P4y), (Q4x, Q4y) )
+    print("R4 = P4 + Q4 is on the curve: {} ".format(is_on_curve( PQ4[0], PQ4[1] )))
+    print("-R4 = P4 + Q4 is on the curve: {} ".format(is_on_curve( PQ4[0], P - PQ4[1] )))
+
+    print("P5 is on the curve: {} ".format(is_on_curve(P5x, P5y)))
+    print("Q5 is on the curve: {} ".format(is_on_curve(Q5x, Q5y)))
+    PQ5 = RValue( (P5x, P5y), (Q5x, Q5y) )
+    print("R5 = P5 + Q5 is on the curve: {} ".format(is_on_curve( PQ5[0], PQ5[1] )))
+    print("-R5 = P5 + Q5 is on the curve: {} ".format(is_on_curve( PQ5[0], P - PQ5[1] )))
+
+    print("P6 is on the curve: {} ".format(is_on_curve(P6x, P6y)))
+    print("Q6 is on the curve: {} ".format(is_on_curve(Q6x, Q6y)))
+    PQ6 = RValue( (P6x, P6y), (Q6x, Q6y) )
+    print("R6 = P6 + Q6 is on the curve: {} ".format(is_on_curve( PQ6[0], PQ6[1] )))
+    print("-R6 = P6 + Q6 is on the curve: {} ".format(is_on_curve( PQ6[0], P - PQ6[1] )))
+
+    print("P7 is on the curve: {} ".format(is_on_curve(P7x, P7y)))
+    print("Q7 is on the curve: {} ".format(is_on_curve(Q7x, Q7y)))
+    PQ7 = RValue( (P7x, P7y), (Q7x, Q7y) )
+    print("R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], PQ7[1] )))
+    print("-R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], P - PQ7[1] )))
+
+    app.run(debug=True, threaded=True)
