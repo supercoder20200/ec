@@ -432,7 +432,7 @@ def index():
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz)
+    return render_template('modk-add.html', rz=rz, line_through_g='False')
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -500,7 +500,7 @@ def mod_add():
 
     rz = atZero((Rx, Ry))
     
-    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz  })
+    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': 'False'  })
 
     
 if __name__ == '__main__':

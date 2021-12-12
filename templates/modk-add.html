@@ -98,12 +98,6 @@
             At Zero: {{ rz }}
             <script type="text/javascript">
               console.log("RZ::", '{{ rz }}' )
-               if( '{{ rz }}' == 'True'){
-
-               }
-               else if( '{{ rz }}' == 'False'){
-
-               }
             </script>
 
             <span id="rz_yes">
@@ -128,7 +122,19 @@
       <p>It's free software, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>, hosted on <a href="https://github.com/andreacorbellini/ecc">GitHub</a> and served by <a href="http://rawgit.com/">RawGit</a>.</p>
     </footer>
     <script type="text/javascript">
-        
+        if('{{ rz }}' == 'False'){
+          console.log("RZ Hello World;")
+          document.getElementById("rz_yes").style.display = "none"
+        }else if('{{ rz }}' == 'True'){
+          document.getElementById("rz_no").style.display = "none"
+        }
+
+        if('{{ line_through_g }}' == 'False'){
+          document.getElementById("g_yes").style.display = "none"
+
+        }else if('{{ line_through_g }}' == 'True'){
+          document.getElementById("g_no").style.display = "none"
+        }
         $(function() {
           $.ec.modk.cons();
           $.ec.curve = new $.ec.modk.PointAddition();
