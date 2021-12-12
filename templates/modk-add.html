@@ -82,13 +82,39 @@
               <label for="point-q-y">y</label>
               <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
             </div>
-          </div>
-          Line passes through G? 
-          <button>{{ gpointText}} </button>
-        </div>
-        <div>
+          </div><br/>
+
+          <div>
+            Line passes through G? 
+            <span id="g_yes">
+              <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+            </span>
+            <span id="g_no">
+              <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+            </span>
+          </div><br/>
+
+          <div>
             At Zero: {{ rz }}
-        </div> 
+            <script type="text/javascript">
+              console.log("RZ::", '{{ rz }}' )
+               if( '{{ rz }}' == 'True'){
+
+               }
+               else if( '{{ rz }}' == 'False'){
+
+               }
+            </script>
+
+            <span id="rz_yes">
+              <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+            </span>
+            <span id="rz_no">
+              <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+            </span>
+          </div><br/>
+        </div>
+        
         <div id="summary">
           <p>Point addition over the elliptic curve <span class="curve-equation"></span> in &#120125;<sub class="field-order"></sub>.</p>
           <p>The curve has <span class="curve-order"></span> points (including the point at infinity).</p>
@@ -102,6 +128,7 @@
       <p>It's free software, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>, hosted on <a href="https://github.com/andreacorbellini/ecc">GitHub</a> and served by <a href="http://rawgit.com/">RawGit</a>.</p>
     </footer>
     <script type="text/javascript">
+        
         $(function() {
           $.ec.modk.cons();
           $.ec.curve = new $.ec.modk.PointAddition();
