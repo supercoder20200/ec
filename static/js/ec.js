@@ -364,7 +364,7 @@
 
         this.marginFactor = 0;
         //115792089237316195423570985008687907853269984665640564039457584007908834671663 / 1e+73
-        this.kInput = parseInt(115792089237316195423570985008687907853269984665640564039457584007908834671663 / SCALE)
+        this.kInput = 11579//115792089237316195423570985008687907853269984665640564039457584007908834671663 / SCALE
 
         console.log("this.kInput::", this.kInput)
 
@@ -901,8 +901,8 @@
     $.ec.modk.PointAddition.prototype.getInputValues = function() {
         $.ec.modk.Base.prototype.getInputValues.call( this );
        
-        this.p = [ parseInt(this.pxInput.val() / SCALE), parseInt( this.pyInput.val() /SCALE ) ];
-        this.q = [ parseInt(this.qxInput.val() / SCALE), parseInt(this.qyInput.val() /SCALE ) ];
+        this.p = [ (this.pxInput.val() / SCALE), ( this.pyInput.val() /SCALE ) ];
+        this.q = [ (this.qxInput.val() / SCALE), (this.qyInput.val() /SCALE ) ];
         this.g = [ (this.gxInput.val() / SCALE), (this.gyInput.val() / SCALE)]
         this.ng = [this.g[0], this.k - this.g[1]]
 
