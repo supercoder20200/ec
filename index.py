@@ -402,6 +402,17 @@ def slope(P,Q):
     Qx, Qy = Q
     return Qy - Py / Qx - Px
 
+
+def atZero(R):
+    rx, ry = R 
+    K = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+    if(rx % K == rx):
+        return False 
+    elif(ry % K == ry):
+        return False
+    else:
+        return True
+
 @app.route('/')
 def index():
     print("Showing ....")
@@ -415,60 +426,13 @@ def index():
     DefaultGx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
     DefaultGy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
 
+    rz = atZero( (Rx, Ry) )
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.grid()
 
-    print("Showing Index Pages 3")
-
-    ax.set_ylim(top=yMax)
-    ax.set_ylim(bottom=yMin)
-    ax.set_xlim(left=xMin)
-    ax.set_xlim(right=xMax)
-
-    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
-    ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
-    ax.tick_params(axis='both', which='major', labelsize=6)
-
-    #Points Annotation
-    plt.annotate("P", (DefaultPx, DefaultPy))
-    plt.annotate("Q", (DefaultQx, DefaultQy))
-    plt.annotate("G", (DefaultGx, DefaultGy))
-    plt.annotate("-G", (DefaultGx, P - DefaultGy))
-    plt.annotate("R", (Rx, Ry))
-    plt.annotate("-R", (Rx, P-Ry))
-    
-    scolors = ['red', 'green', 'blue', 'purple','black','orange']
-    plt.scatter(DefaultPx, DefaultPy, color=scolors[0])
-    plt.scatter(DefaultQx, DefaultQy, color=scolors[1])
-    plt.scatter(DefaultGx, DefaultGy, color=scolors[2])
-    plt.scatter(DefaultGx, P-DefaultGy, color=scolors[3])
-    plt.scatter(Rx, Ry, color=scolors[4])
-    plt.scatter(Rx, P-Ry, color=scolors[5])
-
-    print("Px, Qx: {:.2e} {:.2e}".format(DefaultPx, DefaultQx))
-
-    xx = [P1x, Q1x]
-    yy = [P1y, Q1y]
-    plt.plot(xx, yy)
-
-    #Check if G intersects
-    #is_on_curve(DefaultGx, DefaultGy)
-
-    #sampleP = Point(P, 3, 2 )
-    #sampleQ = Point(P, 5, 18)
-    sampleP = Point(P, DefaultPx, DefaultPy)
-    sampleQ = Point(P, DefaultQx, DefaultQy)
-
-    #c = Point(P, 10, 14)
-    #plot_distinct_point_curve(sampleP, sampleQ, 'P', 'Q', '', 'R(P + Q)')
-    plt.savefig(img, format='png')
-    
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-
-    return render_template('modk-add.html', figure=plot_url)
+    return render_template('modk-add.html', rz=rz)
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -531,28 +495,12 @@ def mod_add():
     Ry = Py + Delta * (Rx - Px)
     Ry = -Ry % p
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-
-    plt.grid()
-    
-    ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
-    ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
-
-    plt.annotate("P", (Px, Py))
-    plt.annotate("Q", (Qx, Qy))
-    plt.annotate("R", (Rx, Ry))
-    #plt.annotate("G", (DefaultGx, DefaultGx))
-
     sx = [Px, Qx, Rx]
     sy = [Py, Qy, Ry]
 
-    plt.savefig(img, format='png')
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    rz = atZero((Rx, Ry))
     
-    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'figure': plot_url  })
+    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz  })
 
     
 if __name__ == '__main__':

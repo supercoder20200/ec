@@ -912,7 +912,7 @@ function cons(){
     };
 
     $.ec.modk.PointAddition.prototype.recalculate = function() {
-        this.r = [this.rxInput.val(), this.ryInput.val()]
+        this.r =  [this.rxInput.val(), this.ryInput.val()]
         this.nr = [this.rxInput.val(), this.k - this.ryInput.val()]
         $.ec.modk.Base.prototype.recalculate.call( this );
     };
