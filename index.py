@@ -402,16 +402,31 @@ def slope(P,Q):
     Qx, Qy = Q
     return Qy - Py / Qx - Px
 
+def RVal(P,Q):
+    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
 
-def atZero(R):
-    rx, ry = R 
-    K = 115792089237316195423570985008687907853269984665640564039457584007908834671663
-    if(rx % K == rx):
-        return False 
-    elif(ry % K == ry):
-        return False
+    Px,Py = P 
+    Qx,Qy = Q
+
+    if Px == Qx:
+        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
     else:
+        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+
+    Rx = ( Delta * Delta - Px - Qx )
+    Ry = Py + Delta * (Rx - Px)
+    Ry = -Ry
+    return (Rx,Ry)
+
+def atZero(P,Q):
+    rVal = RVal(P,Q)
+    rx, ry = rVal 
+    K = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+    if( ( (rx ** 2) + (ry ** 2) ) > K ** 2):
         return True
+    else:
+        return False
+    
 
 @app.route('/')
 def index():
@@ -426,13 +441,13 @@ def index():
     DefaultGx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
     DefaultGy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
 
-    rz = atZero( (Rx, Ry) )
+    rz = atZero( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz, line_through_g='False')
+    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g='False')
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -498,7 +513,7 @@ def mod_add():
     sx = [Px, Qx, Rx]
     sy = [Py, Qy, Ry]
 
-    rz = atZero((Rx, Ry))
+    rz = atZero( (Px, Py), (Qx, Qy) )
     
     return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': 'False'  })
 
