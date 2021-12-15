@@ -95,7 +95,7 @@
           </div><br/>
 
           <div>
-            At Zero: {{ rz }}
+            At Zero:
             <script type="text/javascript">
               console.log("RZ::", '{{ rz }}' )
             </script>
@@ -191,9 +191,31 @@
             
             document.getElementById("point-r-x").value = response.rx;
             document.getElementById("point-r-y").value = response.ry;
+           
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
+
+
+            let rz = response.rz
+            let line_through_g = response.line_through_g
+            console.log("RZ Hello World;", typeof(rz), rz==false)
+            if(rz == false){
+              console.log("RZ Hello World;")
+              document.getElementById("rz_yes").style.display = "none"
+              document.getElementById("rz_no").style.display = "block"
+            }else if(rz == true){
+              document.getElementById("rz_yes").style.display = "block"
+              document.getElementById("rz_no").style.display = "none"
+            }
+
+            if(line_through_g == false){
+              document.getElementById("g_yes").style.display = "none"
+              document.getElementById("g_no").style.display = "block"
+            }else if(line_through_g == true){
+              document.getElementById("g_yes").style.display = "block"
+              document.getElementById("g_no").style.display = "none"
+            }
 
             //Plotly.newPlot('scatter', x=xScale, y=yScale)
             $(function() {
@@ -235,6 +257,25 @@
             let yScale = [_py, _qy, response.ry]
 
             //Plotly.newPlot('scatter', x=xScale, y=yScale)
+            let rz = response.rz
+            let line_through_g = response.line_through_g
+            console.log("RZ Hello World;", typeof(rz), rz==false)
+            if(rz == false){
+              console.log("RZ Hello World;")
+              document.getElementById("rz_yes").style.display = "none"
+              document.getElementById("rz_no").style.display = "block"
+            }else if(rz == true){
+              document.getElementById("rz_yes").style.display = "block"
+              document.getElementById("rz_no").style.display = "none"
+            }
+
+            if(line_through_g == false){
+              document.getElementById("g_yes").style.display = "none"
+              document.getElementById("g_no").style.display = "block"
+            }else if(line_through_g == true){
+              document.getElementById("g_yes").style.display = "block"
+              document.getElementById("g_no").style.display = "none"
+            }
 
           }, 
           error: function(error){
@@ -270,6 +311,25 @@
             let yScale = [_py, _qy, response.ry]
 
             //Plotly.newPlot('scatter', x=xScale, y=yScale)
+            let rz = response.rz
+            let line_through_g = response.line_through_g
+            console.log("RZ Hello World;", typeof(rz), rz==false)
+            if(rz == false){
+              console.log("RZ Hello World;")
+              document.getElementById("rz_yes").style.display = "none"
+              document.getElementById("rz_no").style.display = "block"
+            }else if(rz == true){
+              document.getElementById("rz_yes").style.display = "block"
+              document.getElementById("rz_no").style.display = "none"
+            }
+
+            if(line_through_g == false){
+              document.getElementById("g_yes").style.display = "none"
+              document.getElementById("g_no").style.display = "block"
+            }else if(line_through_g == true){
+              document.getElementById("g_yes").style.display = "block"
+              document.getElementById("g_no").style.display = "none"
+            }
 
           }, 
           error: function(error){
@@ -303,6 +363,28 @@
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
+
+            let rz = response.rz
+            let line_through_g = response.line_through_g
+
+            console.log("RZ Hello World;", typeof(rz), rz==false)
+
+            if(rz == false){
+              console.log("RZ Hello World;")
+              document.getElementById("rz_yes").style.display = "none"
+              document.getElementById("rz_no").style.display = "block"
+            }else if(rz == true){
+              document.getElementById("rz_yes").style.display = "block"
+              document.getElementById("rz_no").style.display = "none"
+            }
+
+            if(line_through_g == false){
+              document.getElementById("g_yes").style.display = "none"
+              document.getElementById("g_no").style.display = "block"
+            }else if(line_through_g == true){
+              document.getElementById("g_yes").style.display = "block"
+              document.getElementById("g_no").style.display = "none"
+            }
 
             //Plotly.newPlot('scatter', x=xScale, y=yScale)
 

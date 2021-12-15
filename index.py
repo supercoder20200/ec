@@ -437,11 +437,10 @@ def atZero(P,Q):
     Px, Py = P
     Qx, Qy = Q
     
-
     #(Px + Qx > Rx) and  (Py + Qy > Ry)
-    if((Px + Qx) > Rx and (Py + Qy) > Ry ):
+    if( (Px + Qx) > Rx and (Py + Qy) > Ry ):
         #Qx > Rx > Px  and Qy > Ry > Py
-        if( (Qx > Rx and Rx > Px) and (Qy > Ry) and Ry > Py ):
+        if( (Qx > Rx and Rx > Px) and (Qy > Ry and Ry > Py) ):
             return False  # No
         else:
             return True   # Yes
@@ -539,6 +538,7 @@ def mod_add():
     sy = [Py, Qy, Ry]
 
     rz = atZero( (Px, Py), (Qx, Qy) )
+    print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
     
     return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': rz  })
 
@@ -598,7 +598,7 @@ if __name__ == '__main__':
     print("Hex Public to Public Addresses() : {} ".format( hex_public_to_public_addresses( p1key ) ))
 
     
-    print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
+    '''print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
     print("-G is on the curve: {} ".format(is_on_curve(nGx, nGy)))
 
     print("P1 is on the curve: {} ".format(is_on_curve(P1x, P1y)))
@@ -641,6 +641,6 @@ if __name__ == '__main__':
     print("Q7 is on the curve: {} ".format(is_on_curve(Q7x, Q7y)))
     PQ7 = RValue( (P7x, P7y), (Q7x, Q7y) )
     print("R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], PQ7[1] )))
-    print("-R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], P - PQ7[1] )))
+    print("-R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], P - PQ7[1] )))'''
 
     app.run(debug=True, threaded=True)
