@@ -20,6 +20,9 @@ import matplotlib.lines as mlines
 from matplotlib.ticker import MaxNLocator
 import math
 
+from hashlib import sha256, new
+import binascii
+
 P1x = 73310771008388540988256401357661415352304042095800324289366824950562794967684
 P1y = 25612579043039068451963311536261134020656877051603969401472335406669199866075
 Q1x = 48176182141707200397494489313819525051007048199980929464227639919183476022336
@@ -402,11 +405,21 @@ def slope(P,Q):
     Qx, Qy = Q
     return Qy - Py / Qx - Px
 
+def point_to_key(coord):
+    x,y = coord
+    hx = hex(x).split('x')[-1]
+    hy = hex(y).split('x')[-1]
+    key = '04' + hx + hy
+    return key
+
 def RVal(P,Q):
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
 
     Px,Py = P 
     Qx,Qy = Q
+
+    p_key = point_to_key(P)
+    q_key = point_to_key(Q)
 
     if Px == Qx:
         Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
@@ -419,13 +432,23 @@ def RVal(P,Q):
     return (Rx,Ry)
 
 def atZero(P,Q):
-    rVal = RVal(P,Q)
-    rx, ry = rVal 
+    rVal = RValue(P,Q)
+    Rx, Ry = rVal 
+    Px, Py = P
+    Qx, Qy = Q
     K = 115792089237316195423570985008687907853269984665640564039457584007908834671663
-    if( ( (rx ** 2) + (ry ** 2) ) > K ** 2):
-        return True
+
+    if((Px + Qx) > Rx and (Py + Qy) > Ry ):
+        if( (Qx > Rx and Rx > Px) and (Qy > Ry) and Py ):
+            return False
+        else:
+            return True
     else:
         return False
+    '''if( ( (rx ** 2) + (ry ** 2) ) > K ** 2):
+        return True
+    else:
+        return False'''
     
 
 @app.route('/')
@@ -447,7 +470,7 @@ def index():
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g='False')
+    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz)
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -515,10 +538,63 @@ def mod_add():
 
     rz = atZero( (Px, Py), (Qx, Qy) )
     
-    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': 'False'  })
+    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': rz  })
 
     
+def hash_256_from_hex_string_like_bytes(hexstring: str):
+    return sha256(bytes.fromhex(hexstring)).hexdigest()
+
+def ripemd160_from_hex_string_like_bytes(hexstring: str):
+    return new('ripemd160', bytes.fromhex(hexstring)).hexdigest()
+
+def sha_ripe_digest(hex_string_to_checksum):
+    hashc1 = hash_256_from_hex_string_like_bytes(hex_string_to_checksum)
+    hashc2 = ripemd160_from_hex_string_like_bytes(hashc1)
+    return hashc2.upper()
+
+def sha256_get_checksum(hex_string_to_checksum):
+    hasha1 = hash_256_from_hex_string_like_bytes(hex_string_to_checksum)
+    # print("HashA1", hasha1)
+    hasha2 = hash_256_from_hex_string_like_bytes(hasha1)
+    # print("HashA2", hasha2)
+    return hasha2[:8].upper()
+
+def b58encode(hex_string, expected_length=None):
+    v = binascii.unhexlify(hex_string)
+    alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    lev, number = 1, 0
+    for char in reversed(v):
+        number += lev * char
+        lev = lev << 8  # 2^8
+    string = ""
+    while number:
+        number, modulo = divmod(number, 58)
+        string = alphabet[modulo] + string
+    if not expected_length:
+        return string
+    elif len(string) != expected_length:
+        raise Exception(f"b58encode: Expected length={expected_length} obtained length={len(string)}")
+    else:
+        return string
+
+def hex_public_to_public_addresses(hex_publics):
+    uncompressed = hex_publics
+    public_key_hashC_uncompressed = "00" + sha_ripe_digest(uncompressed)
+    checksum = sha256_get_checksum(public_key_hashC_uncompressed)
+    PublicKeyChecksumC = public_key_hashC_uncompressed + checksum
+    public_address_uncompressed = "1" + b58encode(PublicKeyChecksumC, 33)
+    #print("Public address uncompressed:\t", public_address_uncompressed)
+    return public_address_uncompressed
+
 if __name__ == '__main__':
+
+    p1key = point_to_key( (P1x, P1y) )
+    at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
+    print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
+    print("Test Q1 point_to_key() : {} ".format( point_to_key( (Q1x, Q1y) ) ))
+    
+    print("Hex Public to Public Addresses() : {} ".format( hex_public_to_public_addresses( p1key ) ))
+
     
     print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
     print("-G is on the curve: {} ".format(is_on_curve(nGx, nGy)))
