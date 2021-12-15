@@ -436,15 +436,17 @@ def atZero(P,Q):
     Rx, Ry = rVal 
     Px, Py = P
     Qx, Qy = Q
-    K = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+    
 
+    #(Px + Qx > Rx) and  (Py + Qy > Ry)
     if((Px + Qx) > Rx and (Py + Qy) > Ry ):
-        if( (Qx > Rx and Rx > Px) and (Qy > Ry) and Py ):
-            return False
+        #Qx > Rx > Px  and Qy > Ry > Py
+        if( (Qx > Rx and Rx > Px) and (Qy > Ry) and Ry > Py ):
+            return False  # No
         else:
-            return True
+            return True   # Yes
     else:
-        return False
+        return False  # No
     '''if( ( (rx ** 2) + (ry ** 2) ) > K ** 2):
         return True
     else:
