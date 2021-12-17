@@ -439,8 +439,8 @@ def atZero(P,Q):
     
     #(Px + Qx > Rx) and  (Py + Qy > Ry)
     if( (Px + Qx) > Rx and (Py + Qy) > Ry ):
-        #Qx > Rx > Px  and Qy > Ry > Py
-        if( (Qx > Rx and Rx > Px) and (Qy > Ry and Ry > Py) ):
+        #Qx > Rx > Px  and Qy > Ry > Py or ((Px > Rx) and (Qx > Rx)) and (Qy > Py > Ry)
+        if( ((Qx > Rx and Rx > Px) and (Qy > Ry and Ry > Py)) or ((Px > Rx and Qx > Rx) and (Qy > Py and Py > Ry)) ):
             return False  # No
         else:
             return True   # Yes
