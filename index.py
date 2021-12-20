@@ -438,12 +438,12 @@ def atZero(P,Q):
     Qx, Qy = Q
 
     if ((Px + Qx < P) or (Py + Qy < P)):
-        if( ((Rx > Qx > Px) and ((Ry > Qy > Py) or (Qy > Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry > Qy) ) ):
+        if( (( (Rx > Qx and Qx > Px )) and ((Ry > Qy and Qy > Py ) or (Qy > Py and Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry and Ry > Qy) ) ):
             return True
         else:
             return False
     else:
-        if (((Px > Qx > Rx) or (Qx > Px > Rx)) & (Py > Qy > Ry)):
+        if (((Px > Qx and Qx > Rx) or (Qx > Px and Px > Rx)) & (Py > Qy and Qy > Ry)):
             return True 
         else:
             return False
