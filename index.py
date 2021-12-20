@@ -71,7 +71,7 @@ a = 0
 b = 7
 
 P= (2**256) - (2**32) - (2**9) - (2**8) - (2**7) - (2**6) - (2**4) - 1
-#115792089237316195423570985008687907853269984665640564039457584007908834671663
+PK = 115792089237316195423570985008687907853269984665640564039457584007908834671663
 #0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
 A=0
 B=7
@@ -437,7 +437,7 @@ def atZero(P,Q):
     Px, Py = P
     Qx, Qy = Q
 
-    if ((Rx < P) or (Ry < P)):
+    if ((Rx < PK) or (Ry < PK)):
         if( (( (Rx > Qx and Qx > Px )) and ((Ry > Qy and Qy > Py ) or (Qy > Py and Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry and Ry > Qy) ) ):
             return True
         else:
