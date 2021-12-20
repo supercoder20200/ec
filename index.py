@@ -436,20 +436,17 @@ def atZero(P,Q):
     Rx, Ry = rVal 
     Px, Py = P
     Qx, Qy = Q
-    
-    #(Px + Qx > Rx) and  (Py + Qy > Ry)
-    if( (Px + Qx) > Rx and (Py + Qy) > Ry ):
-        #Qx > Rx > Px  and Qy > Ry > Py or ((Px > Rx) and (Qx > Rx)) and (Qy > Py > Ry)
-        #( (((Qx > Rx > Px) or (Px > Rx > Qx)) and (Qy > Ry > Ry)) or ((Qx > Px > Rx) and (Qy > Py > Ry)))
-        '''if( ( ((Qx > Rx and Rx > Px)or(Px > Rx and Rx > Qx)) and (Qy > Ry and Ry > Py))) or ( (Qx > Px and Px > Rx) and (Qy > Py and Py > Ry) ):
-            return None'''
 
-        if( ( ((Qx > Rx and Rx > Px)or(Px > Rx and Rx > Qx)) and (Qy > Ry and Ry > Py))) or ( (Qx > Px and Px > Rx) and (Qy > Py and Py > Ry) ):
-            return False  # No
+    if ((Px + Qx < P) or (Py + Qy < P)):
+        if( ((Rx > Qx > Px) and ((Ry > Qy > Py) or (Qy > Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry > Qy) ) ):
+            return True
         else:
-            return True   # Yes
+            return False
     else:
-        return False  # No
+        if (((Px > Qx > Rx) or (Qx > Px > Rx)) & (Py > Qy > Ry)):
+            return True 
+        else:
+            return False
     
 
 @app.route('/')
@@ -495,6 +492,12 @@ def inverse_mod(k, p):
     gcd, x, y = old_r, old_s, old_t
 
     return x % p
+
+def double(P):
+    return None
+
+def multiply(P,g):
+    return None
 
 def RValue(P,Q):
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
