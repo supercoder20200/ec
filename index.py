@@ -405,12 +405,24 @@ def slope(P,Q):
     Qx, Qy = Q
     return Qy - Py / Qx - Px
 
+#returns uncompressed public key
 def point_to_key(coord):
     x,y = coord
     hx = hex(x).split('x')[-1]
     hy = hex(y).split('x')[-1]
     key = '04' + hx + hy
     return key
+
+#Get compressed public key
+def get_compressed_key(coord):
+    x,y = coord
+    hx = hex(x).split('x')[-1]
+    if y%2 == 0:
+        return '02' + hx 
+    else:
+        return '03' + hx
+
+#Get Private Key
 
 def RVal(P,Q):
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
@@ -437,7 +449,20 @@ def atZero(P,Q):
     Px, Py = P
     Qx, Qy = Q
 
-    if ((Rx < PK) or (Ry < PK)):
+    p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+
+    if ((Px+Qx<p) or (Py+Qy<p)):
+        if ((Rx>Px>Qx) and (Py>Qy>Ry) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Rx>Qx>Px) and(Qy>Py>Ry) or (Qx>Px == Rx) and (Py>Ry>Qy) or (Rx>Qx>Px) and (Ry>Qy>Py)) :
+            return True #then "Yes"
+        else:
+            return False #then "No"
+    else:
+        if ((Px>Rx>Qx) and (Qy>Ry>Py) or (Qx>Px>Rx) and (Qy>Py>Ry) or (Qx>Rx>Px) and (Qy>Ry>Py) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Qx>Rx>Px) and (Py>Ry>Qy) or (Qx>Rx>Px) and (Py>Qy>Ry)):
+            return False #then "No"
+        else:
+            return True #then "Yes"
+
+    '''if ((Rx < PK) or (Ry < PK)):
         if( (( (Rx > Qx and Qx > Px )) and ((Ry > Qy and Qy > Py ) or (Qy > Py and Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry and Ry > Qy) ) ):
             return True
         else:
@@ -446,7 +471,7 @@ def atZero(P,Q):
         if (((Px > Qx and Qx > Rx) or (Qx > Px and Px > Rx)) & (Py > Qy and Qy > Ry)):
             return True 
         else:
-            return False
+            return False'''
     
 
 @app.route('/')
@@ -493,12 +518,6 @@ def inverse_mod(k, p):
 
     return x % p
 
-def double(P):
-    return None
-
-def multiply(P,g):
-    return None
-
 def RValue(P,Q):
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
     Px,Py = P 
@@ -513,6 +532,23 @@ def RValue(P,Q):
     Ry = Py + Delta * (Rx - Px)
     Ry = -Ry % p
     return (Rx,Ry)
+
+def double(P):
+    Px, Py = P
+    slope = (( (3 * (Px ** 2)) * inverse_mod(2 * Py, PK) )) % PK
+    x = ( (slope ** 2) - (2 * Px)) % PK
+    y = (slope * (Px - x) - Py ) % PK
+    return (x,y)
+
+def multiply(k,point=(Gx, Gy)):
+    current = point 
+    b = bin(k)
+    binary = b[2:]
+    for char in binary:
+        current = double(current)
+        if char == "1":
+            current = RValue(current, point)
+    return None
 
 
 @app.route("/_mod_addition")
@@ -593,13 +629,15 @@ def hex_public_to_public_addresses(hex_publics):
 
 if __name__ == '__main__':
 
+    #uncompressed public key
     p1key = point_to_key( (P1x, P1y) )
     at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
     print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
-    print("Test Q1 point_to_key() : {} ".format( point_to_key( (Q1x, Q1y) ) ))
-    
-    print("Hex Public to Public Addresses() : {} ".format( hex_public_to_public_addresses( p1key ) ))
+    #print("Test Q1 point_to_key() : {} ".format( point_to_key( (Q1x, Q1y) ) ))
+    #print("Hex Public to Public Addresses() : {} ".format( hex_public_to_public_addresses( p1key ) ))
 
+    k = 0
+    point = multiply(k, (Gx, Gy))
     
     '''print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
     print("-G is on the curve: {} ".format(is_on_curve(nGx, nGy)))
