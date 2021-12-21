@@ -452,7 +452,7 @@ def atZero(P,Q):
     p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
 
     if ((Px+Qx<p) or (Py+Qy<p)):
-        if ((Rx>Px>Qx) and (Py>Qy>Ry) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Rx>Qx>Px) and(Qy>Py>Ry) or (Qx>Px == Rx) and (Py>Ry>Qy) or (Rx>Qx>Px) and (Ry>Qy>Py)) :
+        if ((Rx>Px>Qx) and (Py>Qy>Ry) and (Py+Qy<p) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Rx>Qx>Px) and(Qy>Py>Ry) or (Qx>Px == Rx) and (Py>Ry>Qy) or (Rx>Qx>Px) and (Ry>Qy>Py)) :
             return True #then "Yes"
         else:
             return False #then "No"
