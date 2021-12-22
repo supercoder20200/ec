@@ -451,27 +451,30 @@ def atZero(P,Q):
 
     p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
 
-    if ((Px+Qx<p) or (Py+Qy<p)):
-        if ((Rx>Px>Qx) and (Py>Qy>Ry) and (Py+Qy<p) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Rx>Qx>Px) and(Qy>Py>Ry) or (Qx>Px == Rx) and (Py>Ry>Qy) or (Rx>Qx>Px) and (Ry>Qy>Py)) :
-            return True #then "Yes"
-        else:
-            return False #then "No"
-    else:
-        if ((Px>Rx>Qx) and (Qy>Ry>Py) or (Qx>Px>Rx) and (Qy>Py>Ry) or (Qx>Rx>Px) and (Qy>Ry>Py) or (Qx>Rx>Px) and (Py>Qy>Ry) or (Qx>Rx>Px) and (Py>Ry>Qy) or (Qx>Rx>Px) and (Py>Qy>Ry)):
-            return False #then "No"
-        else:
-            return True #then "Yes"
-
-    '''if ((Rx < PK) or (Ry < PK)):
-        if( (( (Rx > Qx and Qx > Px )) and ((Ry > Qy and Qy > Py ) or (Qy > Py and Py > Ry))) or ( (Qx > Px == Rx) and (Py > Ry and Ry > Qy) ) ):
+    if ((Px+Qx>p)and(Py+Qy>p)):
+        if ( ((Px>Qx>Rx) and (Ry>Qy>Py)) or ((Qx>Px>Rx) and (Py>Qy>Ry)) or ((Qx>Px>Rx) and (Qy>Ry>Py)) or ((Qx>Px>Rx) and (Py>Qy>Ry)) or ((Qx>Rx>Px) and (Py>Qy>Ry) and (Rx+Ry>p)) or ((Px>Qx>Rx) and (Qy>Ry>Py)) ):
             return True
         else:
             return False
-    else:
-        if (((Px > Qx and Qx > Rx) or (Qx > Px and Px > Rx)) & (Py > Qy and Qy > Ry)):
-            return True 
+
+
+    if ((Px+Qx>p) and (Py+Qy<p)):
+        if ( ((Qx>Px==Rx) and (Py>Ry>Qy)) or ((Qx>Rx>Px) and (Py>Qy>Ry)) or ((Qx>Rx>Px) and (Ry>Qy>Py)) or ((Px>Rx>Qx) and (Py>Ry>Qy)) ):
+            return True
         else:
-            return False'''
+            return False
+
+    if ((Px+Qx<p) and (Py+Qy>p)):
+        if ( ((Rx>Qx>Px) and (Qy>Py>Ry)) or ((Rx>Qx>Px) and (Ry>Qy>Py)) ):
+            return True
+        else:
+            return False
+
+    if ((Px+Qx<p) and (Py+Qy<p)):
+        if ( ((Rx>Px>Qx) and (Py>Qy>Ry)) or ((Rx>Px>Qx) and (Qy>Py>Ry)) or ((Px>Qx>Rx) and (Ry>Qy>Py)) or ((Qx>Rx>Px) and (Ry>Py>Qy)) ):
+            return True
+        else:
+            return False
     
 
 @app.route('/')
