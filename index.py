@@ -451,30 +451,30 @@ def atZero(P,Q):
 
     p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
 
-    if ((Px+Qx>p)and(Py+Qy>p)):
-        if ((Px>Qx>Rx)and(Ry>Qy>Py) or (Qx>Px>Rx)and(Py>Qy>Ry) or (Qx>Px>Rx)and(Qy>Ry>Py) or (Qx>Px>Rx)and(Py>Qy>Ry) or (Qx>Rx>Px)and(Py>Qy>Ry)and(Rx+Ry>p) or (Px>Qx>Rx)and(Qy>Ry>Py) or (Qx>Px>Rx)and(Qy>Py>Ry)):
+    if((Px+Qx>p) and (Py+Qy>p)):
+        if ((Px>Qx>Rx) and (Ry>Qy>Py) or (Qx>Px>Rx) and (Py>Qy>Ry) or (Qx>Px>Rx) and (Qy>Ry>Py) or (Qx>Px>Rx) and (Py>Qy>Ry) or (Qx>Rx>Px)and(Py>Qy>Ry)and(Rx+Ry>p) or (Px>Qx>Rx)and(Qy>Ry>Py) or (Qx>Px>Rx)and(Qy>Py>Ry)):
             return True
         else:
             return False
 
-
-    if ((Px+Qx>p) and (Py+Qy<p)):
+    if((Px+Qx>p)and(Py+Qy<p)):
         if ((Qx>Px==Rx)and(Py>Ry>Qy) or (Qx>Rx>Px)and(Py>Qy>Ry) or (Qx>Rx>Px)and(Ry>Qy>Py) or (Px>Rx>Qx)and(Py>Ry>Qy) or (Qx>Rx>Px)and(Ry>Py>Qy) or (Px>Qx>Rx)and(Qy>Ry>Py) or (Rx>Qx>Px)and(Ry>Qy>Py) or (Px>Qx>Rx)and(Ry>Qy>Py) or (Qx>Px>Rx)and(Py>Qy>Ry) or (Px>Qx>Rx)and(Py>Ry>Qy) or (Qx>Rx>Px)and(Qy>Py>Ry) or (Rx>Px>Qx)and(Ry>Py>Qy)):
             return True
         else:
             return False
 
-    if ((Px+Qx<p) and (Py+Qy>p)):
+    if ((Px+Qx<p)and(Py+Qy>p)):
         if ((Rx>Qx>Px)and(Qy>Py>Ry) or (Rx>Qx>Px)and(Ry>Qy>Py) or (Qx>Rx>Px)and(Qy>Py>Ry) or (Rx>Px>Qx)and(Py>Qy>Ry) or (Px>Qx>Rx)and(Qy>Ry>Py) or (Rx>Qx>Px)and(Py>Qy>Ry) or (Qx>Rx>Px)and(Py>Ry>Qy)):
             return True
         else:
             return False
-
-    if ((Px+Qx<p) and (Py+Qy<p)):
+            
+    if ((Px+Qx<p)and(Py+Qy<p)):
         if ((Rx>Px>Qx)and(Py>Qy>Ry) or (Rx>Px>Qx)and(Qy>Py>Ry) or (Px>Qx>Rx)and(Ry>Qy>Py) or (Qx>Rx>Px)and(Ry>Py>Qy) or (Rx>Qx>Px)and(Ry>Qy>Py) or (Rx>Px>Qx)and(Ry>Py>Qy) or (Rx>Qx>Px)and(Qy>Ry>Py) or (Qx>Rx>Px)and(Ry>Qy>Py) or (Px>Rx>Qx)and(Py>Ry>Qy) or (Qx>Px>Rx)and(Ry>Qy>Py)):
             return True
         else:
             return False
+
     
 
 @app.route('/')
