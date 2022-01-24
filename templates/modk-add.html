@@ -59,9 +59,20 @@
               <input id="point-q-y" name="qy" value="6721877582892931413141315114289651970823246064430791708367976298368088092295" type="number" step="1">
             </div>
           </div>
+
+          <div id="point-mod12-coordinates" class="parameters">
+            <p><em>R</em> = <em>P</em> + <em>Q</em></span>:</p><br/>
+            <div class="parameter point-coordinate result">
+              <label for="point-mod12-x">x</label>
+              <input id="point-mod12-x" name="mod12x" step="any" readonly>
+            </div>
+            <div class="parameter point-coordinate result">
+              <label for="point-mod12-y">y</label>
+              <input id="point-mod12-y" name="mod12y" step="any" readonly></div>
+          </div>
           
           <div id="point-r-coordinates" class="parameters">
-            <p><em>R</em> = <em>P</em> + <em>Q</em></span>:</p><br/>
+            <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod p] :</p><br/>
             <div class="parameter point-coordinate result">
               <label for="point-r-x">x</label>
               <input id="point-r-x" name="rx" step="any" readonly>
@@ -71,6 +82,7 @@
               <input id="point-r-y" name="ry" step="any" readonly></div>
           </div>
         </div>
+
         <div id="g-point">
           <div id="point-g-coordinates" class="parameters">
             <p><em>G</em>:</p><br/>
@@ -191,8 +203,10 @@
             
             document.getElementById("point-r-x").value = response.rx;
             document.getElementById("point-r-y").value = response.ry;
-           
 
+            document.getElementById("point-mod12-x").value = response.add_mod12_x;
+            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+           
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
 
@@ -253,6 +267,9 @@
             document.getElementById("point-r-x").value = response.rx;
             document.getElementById("point-r-y").value = response.ry;
 
+            document.getElementById("point-mod12-x").value = response.add_mod12_x;
+            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
 
@@ -307,6 +324,9 @@
             document.getElementById("point-r-x").value = response.rx;
             document.getElementById("point-r-y").value = response.ry;
 
+            document.getElementById("point-mod12-x").value = response.add_mod12_x;
+            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
 
@@ -360,6 +380,9 @@
             
             document.getElementById("point-r-x").value = response.rx;
             document.getElementById("point-r-y").value = response.ry;
+
+            document.getElementById("point-mod12-x").value = response.add_mod12_x;
+            document.getElementById("point-mod12-y").value = response.add_mod12_y;
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]

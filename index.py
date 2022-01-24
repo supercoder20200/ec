@@ -453,8 +453,15 @@ def atZero(P,Q):
     else:
         return False
 
+def add_mod12(P,Q):
+    Px, Py = P
+    Qx, Qy = Q
 
-    
+    Rx = (Px + Qx) 
+    Ry = (Py + Qy) 
+
+    return (Rx, Ry)
+
 
 @app.route('/')
 def index():
@@ -471,11 +478,13 @@ def index():
 
     rz = atZero( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
+    add_mod12_x, add_mod12_y = add_mod12((DefaultPx, DefaultPy), (DefaultQx, DefaultQy))
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz)
+    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz, add_mod12_x=add_mod12_x, add_mod12_y=add_mod12_y)
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -559,9 +568,11 @@ def mod_add():
     sy = [Py, Qy, Ry]
 
     rz = atZero( (Px, Py), (Qx, Qy) )
+    add_mod12_x, add_mod12_y = add_mod12( (Px, Py), (Qx, Qy) )
+
     print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
     
-    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': rz  })
+    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': rz, 'add_mod12_x': str(add_mod12_x), 'add_mod12_y': str(add_mod12_y)  })
 
     
 def hash_256_from_hex_string_like_bytes(hexstring: str):
