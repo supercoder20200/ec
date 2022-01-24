@@ -440,18 +440,6 @@ def RVal(P,Q):
     Ry = -Ry
     return (Rx,Ry)
 
-def atZero(P,Q):
-    rVal = RValue(P,Q)
-    Rx, Ry = rVal 
-    Px, Py = P
-    Qx, Qy = Q
-
-    p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
-
-    if Rx > p or Ry > p:
-        return True
-    else:
-        return False
 
 def add_mod12(P,Q):
     Px, Py = P
@@ -462,6 +450,18 @@ def add_mod12(P,Q):
 
     return (Rx, Ry)
 
+def atZero(P,Q):
+    rVal = add_mod12(P,Q)
+    Rx, Ry = rVal 
+    Px, Py = P
+    Qx, Qy = Q
+
+    p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+
+    if Rx > p or Ry > p:
+        return True
+    else:
+        return False
 
 @app.route('/')
 def index():
