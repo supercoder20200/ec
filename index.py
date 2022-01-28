@@ -451,7 +451,7 @@ def add_mod12(P,Q):
     return (Rx, Ry)
 
 def atZero(P,Q):
-    rVal = add_mod12(P,Q)
+    rVal = RValue(P,Q)
     Rx, Ry = rVal 
     Px, Py = P
     Qx, Qy = Q
@@ -510,9 +510,9 @@ def inverse_mod(k, p):
     return x % p
 
 def RValue(P,Q):
-    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-    Px,Py = P 
-    Qx,Qy = Q
+    p = 2 * 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+    Px, Py = P 
+    Qx, Qy = Q
 
     if Px == Qx:
         Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
@@ -545,7 +545,6 @@ def multiply(k,point=(Gx, Gy)):
 @app.route("/_mod_addition")
 def mod_add():
     # Modulus
-
     img = io.BytesIO()
 
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -554,15 +553,8 @@ def mod_add():
     Py = int(request.args.get('py',0,int))
     Qx = int(request.args.get('qx',0,int))
     Qy = int(request.args.get('qy',0,int))
-    
-    if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
-    else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
 
-    Rx = ( Delta * Delta - Px - Qx ) % p
-    Ry = Py + Delta * (Rx - Px)
-    Ry = -Ry % p
+    Rx, Ry = RValue( (Px, Py), (Qx, Qy) )
 
     sx = [Px, Qx, Rx]
     sy = [Py, Qy, Ry]
