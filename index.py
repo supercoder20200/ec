@@ -71,7 +71,8 @@ a = 0
 b = 7
 
 P= (2**256) - (2**32) - (2**9) - (2**8) - (2**7) - (2**6) - (2**4) - 1
-PK = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+PValue = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+HValue = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 #0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
 A=0
 B=7
@@ -180,10 +181,6 @@ def plot_curve(p, a, b, ax, point_sizes, point_colors):
     ax.grid()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
-    #ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
-    #ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
-    #ax.tick_params(axis='both', which='major', labelsize=6)
    
     ax.set_ylim(top=yMax)
     ax.set_ylim(bottom=yMin)
@@ -441,7 +438,19 @@ def RVal(P,Q):
     return (Rx,Ry)
 
 
-def add_mod12(P,Q):
+def atZero(P,Q):
+    rVal = RValue(P,Q)
+    Rx, Ry = rVal 
+    Px, Py = P
+    Qx, Qy = Q
+
+    if Rx > HValue or Ry > HValue:
+        return True
+    else:
+        return False
+
+
+def RValue_no_mod(P,Q):
     Px, Py = P
     Qx, Qy = Q
 
@@ -450,18 +459,37 @@ def add_mod12(P,Q):
 
     return (Rx, Ry)
 
-def atZero(P,Q):
-    rVal = RValue(P,Q)
-    Rx, Ry = rVal 
-    Px, Py = P
+
+def RValue(P,Q):
+    p = PValue
+    Px, Py = P 
     Qx, Qy = Q
 
-    p = 115792089237316195423570985008687907853269984665640564039457584007908834671663
-
-    if Rx > p or Ry > p:
-        return True
+    if Px == Qx:
+        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
     else:
-        return False
+        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+
+    Rx = ( Delta * Delta - Px - Qx ) % p
+    Ry = Py + Delta * (Rx - Px)
+    Ry = -Ry % p
+    return (Rx,Ry)
+
+def RValue_mod2p(P,Q):
+    p = 2 * PValue
+    Px, Py = P 
+    Qx, Qy = Q
+
+    if Px == Qx:
+        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+    else:
+        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+
+    Rx = ( Delta * Delta - Px - Qx ) % p
+    Ry = Py + Delta * (Rx - Px)
+    Ry = -Ry % p
+    return (Rx,Ry)
+
 
 @app.route('/')
 def index():
@@ -472,19 +500,21 @@ def index():
     DefaultPy = 9989913769501776956673418849599695616596036032394306022682365229231505097463
     DefaultQx = 49396472789695839840842700318753929600130929079169291199003099305862335813206
     DefaultQy = 67218775828929314131413151142896519708232460644307917083679762983680880922954
-    Rx, Ry = RValue( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
+    
     DefaultGx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
     DefaultGy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
 
     rz = atZero( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
-    add_mod12_x, add_mod12_y = add_mod12((DefaultPx, DefaultPy), (DefaultQx, DefaultQy))
+    Rx, Ry = RValue_no_mod((DefaultPx, DefaultPy), (DefaultQx, DefaultQy))
+    Rx_modp, Ry_modp = RValue( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
+    Rx_mod2p, Ry_mod2p = RValue_mod2p( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz, add_mod12_x=add_mod12_x, add_mod12_y=add_mod12_y)
+    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz, Rx_modp=Rx_modp, Ry_modp=Ry_modp, Rx_mod2p=Rx_mod2p, Ry_mod2p=Ry_mod2p)
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -509,26 +539,12 @@ def inverse_mod(k, p):
 
     return x % p
 
-def RValue(P,Q):
-    p = 2 * 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-    Px, Py = P 
-    Qx, Qy = Q
-
-    if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
-    else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
-
-    Rx = ( Delta * Delta - Px - Qx ) % p
-    Ry = Py + Delta * (Rx - Px)
-    Ry = -Ry % p
-    return (Rx,Ry)
 
 def double(P):
     Px, Py = P
-    slope = (( (3 * (Px ** 2)) * inverse_mod(2 * Py, PK) )) % PK
-    x = ( (slope ** 2) - (2 * Px)) % PK
-    y = (slope * (Px - x) - Py ) % PK
+    slope = (( (3 * (Px ** 2)) * inverse_mod(2 * Py, PValue) )) % PValue
+    x = ( (slope ** 2) - (2 * Px)) % PValue
+    y = (slope * (Px - x) - Py ) % PValue
     return (x,y)
 
 def multiply(k,point=(Gx, Gy)):
@@ -547,24 +563,34 @@ def mod_add():
     # Modulus
     img = io.BytesIO()
 
-    #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
-    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+    p = PValue
     Px = int(request.args.get('px',0,int))
     Py = int(request.args.get('py',0,int))
     Qx = int(request.args.get('qx',0,int))
     Qy = int(request.args.get('qy',0,int))
 
-    Rx, Ry = RValue( (Px, Py), (Qx, Qy) )
+    Rx_modp, Ry_modp = RValue( (Px, Py), (Qx, Qy) )
+    Rx_mod2p, Ry_mod2p = RValue_mod2p( (Px, Py), (Qx, Qy) )
+    Rx, Ry = RValue_no_mod( (Px, Py), (Qx, Qy) )
 
-    sx = [Px, Qx, Rx]
-    sy = [Py, Qy, Ry]
+    sx = [Px, Qx, Rx_modp]
+    sy = [Py, Qy, Ry_modp]
 
     rz = atZero( (Px, Py), (Qx, Qy) )
-    add_mod12_x, add_mod12_y = add_mod12( (Px, Py), (Qx, Qy) )
+    
 
     print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
     
-    return jsonify({'rx': str(Rx), 'ry': str(Ry), 'rz': rz, 'line_through_g': rz, 'add_mod12_x': str(add_mod12_x), 'add_mod12_y': str(add_mod12_y)  })
+    return jsonify({'rz': rz, 
+                    'line_through_g': rz, 
+                    'a': str(Ry),
+                    'rx': str(Rx), 
+                    'ry': str(Ry),
+                    'rx_modp': str(Rx_modp), 
+                    'ry_modp': str(Ry_modp),
+                    'rx_mod2p': str(Rx_mod2p),
+                    'ry_mod2p': str(Ry_mod2p)
+                  })
 
     
 def hash_256_from_hex_string_like_bytes(hexstring: str):
@@ -618,55 +644,10 @@ if __name__ == '__main__':
     p1key = point_to_key( (P1x, P1y) )
     at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
     print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
-    #print("Test Q1 point_to_key() : {} ".format( point_to_key( (Q1x, Q1y) ) ))
-    #print("Hex Public to Public Addresses() : {} ".format( hex_public_to_public_addresses( p1key ) ))
 
     k = 0
     point = multiply(k, (Gx, Gy))
     
-    '''print("G is on the curve:  {} ".format(is_on_curve(Gx, Gy)))
-    print("-G is on the curve: {} ".format(is_on_curve(nGx, nGy)))
-
-    print("P1 is on the curve: {} ".format(is_on_curve(P1x, P1y)))
-    print("Q1 is on the curve: {} ".format(is_on_curve(Q1x, Q1y)))
-    PQ1 = RValue( (P1x, P1y), (Q1x, Q1y) )
-    print("R1 = P1 + Q1 is on the curve: {} ".format(is_on_curve( PQ1[0], PQ1[1] )))
-    print("-R1 = nP1 + nQ1 is on the curve: {} ".format(is_on_curve( PQ1[0], P - PQ1[1] )))
-
-    print("P2 is on the curve: {} ".format(is_on_curve(P2x, P2y)))
-    print("Q2 is on the curve: {} ".format(is_on_curve(Q2x, Q2y)))
-    PQ2 = RValue( (P2x, P2y), (Q2x, Q2y) )
-    print("R2 = P2 + Q2 is on the curve: {} ".format(is_on_curve( PQ2[0], PQ2[1] )))
-    print("-R2 is on the curve: {} ".format(is_on_curve( PQ2[0], P - PQ2[1] )))
-
-    print("P3 is on the curve: {} ".format(is_on_curve(P3x, P3y)))
-    print("Q3 is on the curve: {} ".format(is_on_curve(Q3x, Q3y)))
-    PQ3 = RValue( (P3x, P3y), (Q3x, Q3y) )
-    print("R3 = P3 + Q3 is on the curve: {} ".format(is_on_curve( PQ3[0], PQ3[1] )))
-    print("-R3 = P3 + Q3 is on the curve: {} ".format(is_on_curve( PQ3[0], P - PQ3[1] )))
-
-    print("P4 is on the curve: {} ".format(is_on_curve(P4x, P4y)))
-    print("Q4 is on the curve: {} ".format(is_on_curve(Q4x, Q4y)))
-    PQ4 = RValue( (P4x, P4y), (Q4x, Q4y) )
-    print("R4 = P4 + Q4 is on the curve: {} ".format(is_on_curve( PQ4[0], PQ4[1] )))
-    print("-R4 = P4 + Q4 is on the curve: {} ".format(is_on_curve( PQ4[0], P - PQ4[1] )))
-
-    print("P5 is on the curve: {} ".format(is_on_curve(P5x, P5y)))
-    print("Q5 is on the curve: {} ".format(is_on_curve(Q5x, Q5y)))
-    PQ5 = RValue( (P5x, P5y), (Q5x, Q5y) )
-    print("R5 = P5 + Q5 is on the curve: {} ".format(is_on_curve( PQ5[0], PQ5[1] )))
-    print("-R5 = P5 + Q5 is on the curve: {} ".format(is_on_curve( PQ5[0], P - PQ5[1] )))
-
-    print("P6 is on the curve: {} ".format(is_on_curve(P6x, P6y)))
-    print("Q6 is on the curve: {} ".format(is_on_curve(Q6x, Q6y)))
-    PQ6 = RValue( (P6x, P6y), (Q6x, Q6y) )
-    print("R6 = P6 + Q6 is on the curve: {} ".format(is_on_curve( PQ6[0], PQ6[1] )))
-    print("-R6 = P6 + Q6 is on the curve: {} ".format(is_on_curve( PQ6[0], P - PQ6[1] )))
-
-    print("P7 is on the curve: {} ".format(is_on_curve(P7x, P7y)))
-    print("Q7 is on the curve: {} ".format(is_on_curve(Q7x, Q7y)))
-    PQ7 = RValue( (P7x, P7y), (Q7x, Q7y) )
-    print("R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], PQ7[1] )))
-    print("-R7 = P7 + Q7 is on the curve: {} ".format(is_on_curve( PQ7[0], P - PQ7[1] )))'''
+   
 
     app.run(debug=True, threaded=True)

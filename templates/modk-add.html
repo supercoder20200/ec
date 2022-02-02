@@ -63,39 +63,57 @@
           <div id="point-mod12-coordinates" class="parameters">
             <p><em>R</em> = <em>P</em> + <em>Q</em></span>:</p><br/>
             <div class="parameter point-coordinate result">
-              <label for="point-mod12-x">x</label>
-              <input id="point-mod12-x" name="mod12x" step="any" readonly>
+              <label for="point-rx">x</label>
+              <input id="point-rx" name="mod12x" value={{Rx}} step="any" readonly/>
             </div>
             <div class="parameter point-coordinate result">
-              <label for="point-mod12-y">y</label>
-              <input id="point-mod12-y" name="mod12y" step="any" readonly></div>
+              <label for="point-ry">y</label>
+              <input id="point-ry" name="mod12y" value={{Ry}} step="any" readonly/>
+            </div>
           </div>
           
           <div id="point-r-coordinates" class="parameters">
             <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod p] :</p><br/>
             <div class="parameter point-coordinate result">
-              <label for="point-r-x">x</label>
-              <input id="point-r-x" name="rx" step="any" readonly>
+              <label for="point-modp-rx">x</label>
+              <input id="point-modp-rx" name="rx" value={{Rx_modp}} step="any" readonly/>
             </div>
             <div class="parameter point-coordinate result">
-              <label for="point-r-y">y</label>
-              <input id="point-r-y" name="ry" step="any" readonly></div>
+              <label for="point-modp-ry">y</label>
+              <input id="point-modp-ry" name="ry" value={{Ry_modp}} step="any" readonly/>
+            </div>
           </div>
         </div>
 
-        <div id="g-point">
-          <div id="point-g-coordinates" class="parameters">
-            <p><em>G</em>:</p><br/>
-            <div class="parameter point-coordinate">
-              <label for="point-g-x">x</label>
-              <input id="point-g-x" name="gx" readonly value="55066263022277343669578718895168534326250603453777594175500187360389116729240" type="number" step="1">
-            </div>
-            <div class="parameter point-coordinate">
-              <label for="point-q-y">y</label>
-              <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
-            </div>
-          </div><br/>
+        <div id="point-r-coordinates" class="parameters">
+          <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod 2p] :</p><br/>
+          <div class="parameter point-coordinate result">
+            <label for="point-mod2p-rx">x</label>
+            <input id="point-mod2p-rx" name="mod2p-x" value={{Rx_mod2p}} step="any" readonly/>
+          </div>
+          <div class="parameter point-coordinate result">
+            <label for="point-mod2p-ry">y</label>
+            <input id="point-mod2p-ry" name="mod2p-y" value={{Ry_mod2p}} step="any" readonly/>
+          </div>
+        </div>
 
+        <div id="point-g-coordinates" class="parameters">
+          <p><em>G</em>:</p><br/>
+          <div class="parameter point-coordinate">
+            <label for="point-g-x">x</label>
+            <input id="point-g-x" name="gx" readonly value="55066263022277343669578718895168534326250603453777594175500187360389116729240" type="number" step="1">
+          </div>
+          <div class="parameter point-coordinate">
+            <label for="point-q-y">y</label>
+            <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
+          </div>
+        </div><br/>
+
+
+      </div>
+
+        <div id="g-point">
+          
           <div>
             Line passes through G? 
             <span id="g_yes">
@@ -119,6 +137,7 @@
               <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
             </span>
           </div><br/>
+
         </div>
         
         <div id="summary">
@@ -198,11 +217,14 @@
           success: function(response){
             console.log("response",response)
             
-            document.getElementById("point-r-x").value = response.rx;
-            document.getElementById("point-r-y").value = response.ry;
+            document.getElementById("point-rx").value = response.rx;
+            document.getElementById("point-ry").value = response.ry;
 
-            document.getElementById("point-mod12-x").value = response.add_mod12_x;
-            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+            document.getElementById("point-modp-rx").value = response.rx_modp;
+            document.getElementById("point-modp-ry").value = response.ry_modp;
+
+            document.getElementById("point-mod2p-rx").value = response.rx_mod2p;
+            document.getElementById("point-mod2p-ry").value = response.ry_mod2p;
            
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
@@ -260,11 +282,14 @@
           success: function(response){
             console.log("response",response)
             
-            document.getElementById("point-r-x").value = response.rx;
-            document.getElementById("point-r-y").value = response.ry;
+            document.getElementById("point-rx").value = response.rx;
+            document.getElementById("point-ry").value = response.ry;
 
-            document.getElementById("point-mod12-x").value = response.add_mod12_x;
-            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+            document.getElementById("point-modp-rx").value = response.rx_modp;
+            document.getElementById("point-modp-ry").value = response.ry_modp;
+
+            document.getElementById("point-mod2p-rx").value = response.rx_mod2p;
+            document.getElementById("point-mod2p-ry").value = response.ry_mod2p;
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
@@ -316,11 +341,14 @@
           success: function(response){
             console.log("response",response)
             
-            document.getElementById("point-r-x").value = response.rx;
-            document.getElementById("point-r-y").value = response.ry;
+            document.getElementById("point-rx").value = response.rx;
+            document.getElementById("point-ry").value = response.ry;
 
-            document.getElementById("point-mod12-x").value = response.add_mod12_x;
-            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+            document.getElementById("point-modp-rx").value = response.rx_modp;
+            document.getElementById("point-modp-ry").value = response.ry_modp;
+
+            document.getElementById("point-mod2p-rx").value = response.rx_mod2p;
+            document.getElementById("point-mod2p-ry").value = response.ry_mod2p;
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
@@ -372,11 +400,14 @@
           success: function(response){
             console.log("response",response)
             
-            document.getElementById("point-r-x").value = response.rx;
-            document.getElementById("point-r-y").value = response.ry;
+            document.getElementById("point-rx").value = response.rx;
+            document.getElementById("point-ry").value = response.ry;
 
-            document.getElementById("point-mod12-x").value = response.add_mod12_x;
-            document.getElementById("point-mod12-y").value = response.add_mod12_y;
+            document.getElementById("point-modp-rx").value = response.rx_modp;
+            document.getElementById("point-modp-ry").value = response.ry_modp;
+
+            document.getElementById("point-mod2p-rx").value = response.rx_mod2p;
+            document.getElementById("point-mod2p-ry").value = response.ry_mod2p;
 
             let xScale = [_px, _qx, response.rx]
             let yScale = [_py, _qy, response.ry]
