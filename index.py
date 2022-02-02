@@ -438,18 +438,6 @@ def RVal(P,Q):
     return (Rx,Ry)
 
 
-def atZero(P,Q):
-    rVal = RValue(P,Q)
-    Rx, Ry = rVal 
-    Px, Py = P
-    Qx, Qy = Q
-
-    if Rx > HValue or Ry > HValue:
-        return True
-    else:
-        return False
-
-
 def RValue_no_mod(P,Q):
     Px, Py = P
     Qx, Qy = Q
@@ -489,6 +477,15 @@ def RValue_mod2p(P,Q):
     Ry = Py + Delta * (Rx - Px)
     Ry = -Ry % p
     return (Rx,Ry)
+
+def atZero(P,Q):
+    rVal = RValue_mod2p(P,Q)
+    Rx, Ry = rVal 
+
+    if Rx > HValue or Ry > HValue:
+        return True
+    else:
+        return False
 
 
 @app.route('/')
