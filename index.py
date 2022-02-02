@@ -482,6 +482,8 @@ def atZero(P,Q):
     rVal = RValue_mod2p(P,Q)
     Rx, Ry = rVal 
 
+    print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
+
     if Rx > HValue or Ry > HValue:
         return True
     else:
