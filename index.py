@@ -450,7 +450,7 @@ def RValue_no_mod(P,Q):
 
 
 def RValue(P,Q):
-    p = closest_prime_to_p
+    p = PValue
     Px, Py = P 
     Qx, Qy = Q
 
@@ -465,7 +465,7 @@ def RValue(P,Q):
     return (Rx,Ry)
 
 def RValue_mod2p(P,Q):
-    p = 2 * PValue
+    p = closest_prime_to_p
     Px, Py = P 
     Qx, Qy = Q
 
@@ -480,7 +480,7 @@ def RValue_mod2p(P,Q):
     return (Rx,Ry)
 
 def atZero(P,Q):
-    rVal = RValue(P,Q)
+    rVal = RValue_mod2p(P,Q)
     Rx, Ry = rVal 
 
     print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
