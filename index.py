@@ -72,6 +72,7 @@ b = 7
 
 P= (2**256) - (2**32) - (2**9) - (2**8) - (2**7) - (2**6) - (2**4) - 1
 PValue = 115792089237316195423570985008687907853269984665640564039457584007908834671663
+closest_prime_to_p = 231584178474632390847141970017375815706539969331281128078915168015817669343283
 HValue = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 #0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
 A=0
@@ -449,7 +450,7 @@ def RValue_no_mod(P,Q):
 
 
 def RValue(P,Q):
-    p = PValue
+    p = closest_prime_to_p
     Px, Py = P 
     Qx, Qy = Q
 
@@ -479,7 +480,7 @@ def RValue_mod2p(P,Q):
     return (Rx,Ry)
 
 def atZero(P,Q):
-    rVal = RValue_mod2p(P,Q)
+    rVal = RValue(P,Q)
     Rx, Ry = rVal 
 
     print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
