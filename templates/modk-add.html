@@ -59,18 +59,6 @@
               <input id="point-q-y" name="qy" value="6721877582892931413141315114289651970823246064430791708367976298368088092295" type="number" step="1">
             </div>
           </div>
-
-          <div id="point-mod12-coordinates" class="parameters">
-            <p><em>R</em> = <em>P</em> + <em>Q</em></span>:</p><br/>
-            <div class="parameter point-coordinate result">
-              <label for="point-rx">x</label>
-              <input id="point-rx" name="mod12x" value={{Rx}} step="any" readonly/>
-            </div>
-            <div class="parameter point-coordinate result">
-              <label for="point-ry">y</label>
-              <input id="point-ry" name="mod12y" value={{Ry}} step="any" readonly/>
-            </div>
-          </div>
           
           <div id="point-r-coordinates" class="parameters">
             <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod p] :</p><br/>
@@ -109,43 +97,36 @@
           </div>
         </div><br/>
 
+        <div>
+          Line passes through G? 
+          <span id="g_yes">
+            <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+          </span>
+          <span id="g_no">
+            <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+          </span>
+        </div><br/>
+
+        <div>
+          At Zero: {{rz}}
+          <script type="text/javascript">
+            console.log("RZ::", '{{ rz }}' )
+          </script>
+          
+          <span id="rz_yes">
+            <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+          </span>
+          <span id="rz_no">
+            <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+          </span>
+        </div><br/>
+
 
       </div>
 
-        <div id="g-point">
-          
-          <div>
-            Line passes through G? 
-            <span id="g_yes">
-              <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
-            </span>
-            <span id="g_no">
-              <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
-            </span>
-          </div><br/>
-
-          <div>
-            At Zero: {{rz}}
-            <script type="text/javascript">
-              console.log("RZ::", '{{ rz }}' )
-            </script>
-            
-            <span id="rz_yes">
-              <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
-            </span>
-            <span id="rz_no">
-              <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
-            </span>
-          </div><br/>
-
-        </div>
+       
         
-        <div id="summary">
-          <p>Point addition over the elliptic curve <span class="curve-equation"></span> in &#120125;<sub class="field-order"></sub>.</p>
-          <p>The curve has <span class="curve-order"></span> points (including the point at infinity).</p>
-          <p class="curve-singular-warning"><strong>Warning:</strong> this curve is singular.</p>
-          <p class="composite-warning"><strong>Warning:</strong> <em>p</em> is not a prime.</p>
-        </div>
+        
       </div>
     </main>
     
@@ -216,9 +197,6 @@
           type: 'GET',
           success: function(response){
             console.log("response",response)
-            
-            document.getElementById("point-rx").value = response.rx;
-            document.getElementById("point-ry").value = response.ry;
 
             document.getElementById("point-modp-rx").value = response.rx_modp;
             document.getElementById("point-modp-ry").value = response.ry_modp;
@@ -281,9 +259,6 @@
           type: 'GET',
           success: function(response){
             console.log("response",response)
-            
-            document.getElementById("point-rx").value = response.rx;
-            document.getElementById("point-ry").value = response.ry;
 
             document.getElementById("point-modp-rx").value = response.rx_modp;
             document.getElementById("point-modp-ry").value = response.ry_modp;
@@ -340,9 +315,6 @@
           type: 'GET',
           success: function(response){
             console.log("response",response)
-            
-            document.getElementById("point-rx").value = response.rx;
-            document.getElementById("point-ry").value = response.ry;
 
             document.getElementById("point-modp-rx").value = response.rx_modp;
             document.getElementById("point-modp-ry").value = response.ry_modp;
@@ -399,9 +371,6 @@
           type: 'GET',
           success: function(response){
             console.log("response",response)
-            
-            document.getElementById("point-rx").value = response.rx;
-            document.getElementById("point-ry").value = response.ry;
 
             document.getElementById("point-modp-rx").value = response.rx_modp;
             document.getElementById("point-modp-ry").value = response.ry_modp;

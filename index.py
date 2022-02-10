@@ -72,9 +72,11 @@ b = 7
 
 P= (2**256) - (2**32) - (2**9) - (2**8) - (2**7) - (2**6) - (2**4) - 1
 PValue =              115792089237316195423570985008687907853269984665640564039457584007908834671663
+PValue2 =             231584178474632390847141970017375815706539969331281128078915168015817669343326
 closest_prime_to_2p = 231584178474632390847141970017375815706539969331281128078915168015817669343283
 HValue =              115792089237316195423570985008687907852837564279074904382605163141518161494337
 #0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f 
+NValue =              0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 A=0
 B=7
 
@@ -384,8 +386,8 @@ def is_on_linepoint(p0,p1):
     for line_point0, line_point1 in line_points:
         x1,y1 = line_point0
         x2,y2 = line_point1
-        print("Line Points: {} {} {} {}".format(x1, y1, x2, y2))
-        print("G is on line points : {}".format(is_on_line(x1, y1, x2, y2, Gx, Gy)))
+        #print("Line Points: {} {} {} {}".format(x1, y1, x2, y2))
+        #print("G is on line points : {}".format(is_on_line(x1, y1, x2, y2, Gx, Gy)))
 
 def is_on_line(x1, y1, x2, y2, x3, y3):
     slope = (y2 - y1) / (x2 - x1)
@@ -420,34 +422,6 @@ def get_compressed_key(coord):
     else:
         return '03' + hx
 
-#Get Private Key
-
-def RVal(P,Q):
-    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-
-    Px,Py = P 
-    Qx,Qy = Q
-
-    if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
-    else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
-
-    Rx = ( Delta * Delta - Px - Qx )
-    Ry = Py + Delta * (Rx - Px)
-    Ry = -Ry
-    return (Rx,Ry)
-
-
-def RValue_no_mod(P,Q):
-    Px, Py = P
-    Qx, Qy = Q
-
-    Rx = (Px + Qx) 
-    Ry = (Py + Qy) 
-
-    return (Rx, Ry)
-
 
 def RValue(P,Q):
     p = PValue
@@ -461,11 +435,15 @@ def RValue(P,Q):
 
     Rx = ( Delta * Delta - Px - Qx ) % p
     Ry = Py + Delta * (Rx - Px)
+
+    print("RYRYRYRY: {}".format(Ry))
+
     Ry = -Ry % p
+
     return (Rx,Ry)
 
 def RValue_mod2p(P,Q):
-    p = 2 * PValue
+    p = PValue
     Px, Py = P 
     Qx, Qy = Q
 
@@ -476,14 +454,18 @@ def RValue_mod2p(P,Q):
 
     Rx = ( Delta * Delta - Px - Qx ) % p
     Ry = Py + Delta * (Rx - Px)
+
+    print("RY2RY2RY2RY22: {}".format(Ry))
+
     Ry = -Ry % p
+    
     return (Rx,Ry)
 
 def atZero(P,Q):
     rVal = RValue_mod2p(P,Q)
     Rx, Ry = rVal 
 
-    print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
+    #print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
 
     if Rx > HValue or Ry > HValue:
         return True
@@ -493,7 +475,7 @@ def atZero(P,Q):
 
 @app.route('/')
 def index():
-    print("Showing ....")
+    #print("Showing ....")
     img = io.BytesIO()
     
     DefaultPx = 76713794182478803891528803692822015505111471502816304530189645921738551553824
@@ -506,7 +488,6 @@ def index():
 
     rz = atZero( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
-    Rx, Ry = RValue_no_mod((DefaultPx, DefaultPy), (DefaultQx, DefaultQy))
     Rx_modp, Ry_modp = RValue( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
     Rx_mod2p, Ry_mod2p = RValue_mod2p( (DefaultPx, DefaultPy), (DefaultQx, DefaultQy) )
 
@@ -514,7 +495,7 @@ def index():
     ax = fig.add_subplot(111)
     plt.grid()
 
-    return render_template('modk-add.html', rz=rz, Rx=Rx, Ry=Ry, line_through_g=rz, Rx_modp=Rx_modp, Ry_modp=Ry_modp, Rx_mod2p=Rx_mod2p, Ry_mod2p=Ry_mod2p)
+    return render_template('modk-add.html', rz=rz, line_through_g=rz, Rx_modp=Rx_modp, Ry_modp=Ry_modp, Rx_mod2p=Rx_mod2p, Ry_mod2p=Ry_mod2p)
 
 def inverse_mod(k, p):
     #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
@@ -563,7 +544,6 @@ def mod_add():
     # Modulus
     img = io.BytesIO()
 
-    p = PValue
     Px = int(request.args.get('px',0,int))
     Py = int(request.args.get('py',0,int))
     Qx = int(request.args.get('qx',0,int))
@@ -571,21 +551,17 @@ def mod_add():
 
     Rx_modp, Ry_modp = RValue( (Px, Py), (Qx, Qy) )
     Rx_mod2p, Ry_mod2p = RValue_mod2p( (Px, Py), (Qx, Qy) )
-    Rx, Ry = RValue_no_mod( (Px, Py), (Qx, Qy) )
 
     sx = [Px, Qx, Rx_modp]
     sy = [Py, Qy, Ry_modp]
 
     rz = atZero( (Px, Py), (Qx, Qy) )
     
-
-    print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
+    #print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
     
     return jsonify({'rz': rz, 
                     'line_through_g': rz, 
-                    'a': str(Ry),
-                    'rx': str(Rx), 
-                    'ry': str(Ry),
+                    'a': str(Ry_modp),
                     'rx_modp': str(Rx_modp), 
                     'ry_modp': str(Ry_modp),
                     'rx_mod2p': str(Rx_mod2p),
@@ -643,7 +619,7 @@ if __name__ == '__main__':
     #uncompressed public key
     p1key = point_to_key( (P1x, P1y) )
     at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
-    print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
+    #print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
 
     k = 0
     point = multiply(k, (Gx, Gy))
