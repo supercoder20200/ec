@@ -443,21 +443,21 @@ def RValue(P,Q):
     return (Rx,Ry)
 
 def RValue_mod2p(P,Q):
-    p = PValue
+    p = PValue2
     Px, Py = P 
     Qx, Qy = Q
 
     if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, PValue2)
     else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+        Delta = (Py - Qy) * inverse_mod(Px - Qx, PValue2)
 
-    Rx = ( Delta * Delta - Px - Qx ) % p
+    Rx = ( Delta * Delta - Px - Qx ) % PValue2
     Ry = Py + Delta * (Rx - Px)
 
     print("RY2RY2RY2RY22: {}".format(Ry))
 
-    Ry = -Ry % p
+    Ry = -Ry % PValue2
     
     return (Rx,Ry)
 
@@ -465,9 +465,7 @@ def atZero(P,Q):
     rVal = RValue_mod2p(P,Q)
     Rx, Ry = rVal 
 
-    #print( "Rx: {} Ry: {} HValue: {} ".format(Rx, Ry, HValue) )
-
-    if Rx > HValue or Ry > HValue:
+    if Rx > NValue or Ry > NValue:
         return True
     else:
         return False
@@ -475,7 +473,7 @@ def atZero(P,Q):
 
 @app.route('/')
 def index():
-    #print("Showing ....")
+    
     img = io.BytesIO()
     
     DefaultPx = 76713794182478803891528803692822015505111471502816304530189645921738551553824
@@ -498,12 +496,11 @@ def index():
     return render_template('modk-add.html', rz=rz, line_through_g=rz, Rx_modp=Rx_modp, Ry_modp=Ry_modp, Rx_mod2p=Rx_mod2p, Ry_mod2p=Ry_mod2p)
 
 def inverse_mod(k, p):
-    #p = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1
+   
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
     if k == 0:
         raise ZeroDivisionError('division by zero')
     if k < 0:
-        # k ** -1 = p - (-k) ** -1  (mod p)
         return p - inverse_mod(-k, p)
     # Extended Euclidean algorithm.
     s, old_s = 0, 1
@@ -556,8 +553,6 @@ def mod_add():
     sy = [Py, Qy, Ry_modp]
 
     rz = atZero( (Px, Py), (Qx, Qy) )
-    
-    #print("Px: {}, Qx: {}, Py: {}, Qy: {} Rx: {}, Ry: {}".format(Px, Qx, Py, Qy, Rx, Ry))
     
     return jsonify({'rz': rz, 
                     'line_through_g': rz, 

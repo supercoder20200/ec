@@ -27,106 +27,98 @@
     </header>
     <main>
       <div id="plot" class="box"></div>
-      <!--<div class="graph" id="graph-box">
-        <img src="data:image/png;base64, {{ figure }}" alt="Graph" width="100%" height="100%" />
-      </div> -->
+      
 
       <div class="box">
         <div id="form">
           <div id="curve-coefficients" class="parameters">
             <p>Curve:</p>
 
-          <div id="point-p-coordinates" class="parameters">
-            <p><em>P</em>:</p><br/>
-            <div class="parameter point-coordinate">
-              <label for="point-p-x">x</label>
-              <input id="point-p-x" name="px" value="76713794182478803891528803692822015505111471502816304530189645921738551553824" type="number" step="1">
+            <div id="point-p-coordinates" class="parameters">
+              <p><em>P</em>:</p><br/>
+              <div class="parameter point-coordinate">
+                <label for="point-p-x">x</label>
+                <input id="point-p-x" name="px" value="76713794182478803891528803692822015505111471502816304530189645921738551553824" type="number" step="1">
+              </div>
+              <div class="parameter point-coordinate">
+                <label for="point-p-y">y</label>
+                <input id="point-p-y" name="py" value="9989913769501776956673418849599695616596036032394306022682365229231505097463" type="number" step="1">
+              </div>
             </div>
-            <div class="parameter point-coordinate">
-              <label for="point-p-y">y</label>
-              <input id="point-p-y" name="py" value="9989913769501776956673418849599695616596036032394306022682365229231505097463" type="number" step="1">
-            </div>
-          </div>
 
-          <div id="point-q-coordinates" class="parameters">
-            <p><em>Q</em>:</p><br/>
-            <div class="parameter point-coordinate">
-              <label for="point-q-x">x</label>
-              <input id="point-q-x" name="qx" value="49396472789695839840842700318753929600130929079169291199003099305862335813206" type="number" step="1">
+            <div id="point-q-coordinates" class="parameters">
+              <p><em>Q</em>:</p><br/>
+              <div class="parameter point-coordinate">
+                <label for="point-q-x">x</label>
+                <input id="point-q-x" name="qx" value="49396472789695839840842700318753929600130929079169291199003099305862335813206" type="number" step="1">
+              </div>
+              <div class="parameter point-coordinate">
+                <label for="point-q-y">y</label>
+                <input id="point-q-y" name="qy" value="6721877582892931413141315114289651970823246064430791708367976298368088092295" type="number" step="1">
+              </div>
             </div>
-            <div class="parameter point-coordinate">
-              <label for="point-q-y">y</label>
-              <input id="point-q-y" name="qy" value="6721877582892931413141315114289651970823246064430791708367976298368088092295" type="number" step="1">
-            </div>
-          </div>
           
-          <div id="point-r-coordinates" class="parameters">
-            <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod p] :</p><br/>
-            <div class="parameter point-coordinate result">
-              <label for="point-modp-rx">x</label>
-              <input id="point-modp-rx" name="rx" value={{Rx_modp}} step="any" readonly/>
+            <div id="point-r-coordinates" class="parameters">
+              <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod p] :</p><br/>
+              <div class="parameter point-coordinate result">
+                <label for="point-modp-rx">x</label>
+                <input id="point-modp-rx" name="rx" value={{Rx_modp}} step="any" readonly/>
+              </div>
+              <div class="parameter point-coordinate result">
+                <label for="point-modp-ry">y</label>
+                <input id="point-modp-ry" name="ry" value={{Ry_modp}} step="any" readonly/>
+              </div>
             </div>
-            <div class="parameter point-coordinate result">
-              <label for="point-modp-ry">y</label>
-              <input id="point-modp-ry" name="ry" value={{Ry_modp}} step="any" readonly/>
+
+            <div id="point-r-coordinates" class="parameters">
+              <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod 2p] :</p><br/>
+              <div class="parameter point-coordinate result">
+                <label for="point-mod2p-rx">x</label>
+                <input id="point-mod2p-rx" name="mod2p-x" value={{Rx_mod2p}} step="any" readonly/>
+              </div>
+              <div class="parameter point-coordinate result">
+                <label for="point-mod2p-ry">y</label>
+                <input id="point-mod2p-ry" name="mod2p-y" value={{Ry_mod2p}} step="any" readonly/>
+              </div>
             </div>
+
+            <div id="point-g-coordinates" class="parameters">
+              <p><em>G</em>:</p><br/>
+              <div class="parameter point-coordinate">
+                <label for="point-g-x">x</label>
+                <input id="point-g-x" name="gx" readonly value="55066263022277343669578718895168534326250603453777594175500187360389116729240" type="number" step="1">
+              </div>
+              <div class="parameter point-coordinate">
+                <label for="point-q-y">y</label>
+                <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
+              </div>
+            </div><br/>
+
+            <div>
+              Line passes through G? 
+              <span id="g_yes">
+                <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+              </span>
+              <span id="g_no">
+                <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+              </span>
+            </div><br/>
+    
+            <div>
+              At Zero: {{rz}}
+              <script type="text/javascript">
+                console.log("RZ::", '{{ rz }}' )
+              </script>
+              
+              <span id="rz_yes">
+                <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
+              </span>
+              <span id="rz_no">
+                <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
+              </span>
+            </div><br/>
           </div>
         </div>
-
-        <div id="point-r-coordinates" class="parameters">
-          <p><em> R</em> = <em>P</em> + <em>Q</em></span> [mod 2p] :</p><br/>
-          <div class="parameter point-coordinate result">
-            <label for="point-mod2p-rx">x</label>
-            <input id="point-mod2p-rx" name="mod2p-x" value={{Rx_mod2p}} step="any" readonly/>
-          </div>
-          <div class="parameter point-coordinate result">
-            <label for="point-mod2p-ry">y</label>
-            <input id="point-mod2p-ry" name="mod2p-y" value={{Ry_mod2p}} step="any" readonly/>
-          </div>
-        </div>
-
-        <div id="point-g-coordinates" class="parameters">
-          <p><em>G</em>:</p><br/>
-          <div class="parameter point-coordinate">
-            <label for="point-g-x">x</label>
-            <input id="point-g-x" name="gx" readonly value="55066263022277343669578718895168534326250603453777594175500187360389116729240" type="number" step="1">
-          </div>
-          <div class="parameter point-coordinate">
-            <label for="point-q-y">y</label>
-            <input id="point-g-y" name="gy" readonly value="32670510020758816978083085130507043184471273380659243275938904335757337482424" type="number" step="1">
-          </div>
-        </div><br/>
-
-        <div>
-          Line passes through G? 
-          <span id="g_yes">
-            <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
-          </span>
-          <span id="g_no">
-            <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
-          </span>
-        </div><br/>
-
-        <div>
-          At Zero: {{rz}}
-          <script type="text/javascript">
-            console.log("RZ::", '{{ rz }}' )
-          </script>
-          
-          <span id="rz_yes">
-            <button style="background-color: green; color: white; width: 75px; height: 25px;">Yes</button>
-          </span>
-          <span id="rz_no">
-            <button style="background-color: red; color: white;width: 75px; height: 25px;">No</button>
-          </span>
-        </div><br/>
-
-
-      </div>
-
-       
-        
-        
       </div>
     </main>
     
@@ -134,14 +126,15 @@
         if('{{ rz }}' == 'False'){
           console.log("RZ Hello World;")
           document.getElementById("rz_yes").style.display = "none"
-        }else if('{{ rz }}' == 'True'){
+        }
+        else if('{{ rz }}' == 'True'){
           document.getElementById("rz_no").style.display = "none"
         }
 
         if('{{ line_through_g }}' == 'False'){
           document.getElementById("g_yes").style.display = "none"
-
-        }else if('{{ line_through_g }}' == 'True'){
+        }
+        else if('{{ line_through_g }}' == 'True'){
           document.getElementById("g_no").style.display = "none"
         }
         $(function() {
@@ -410,6 +403,6 @@
           }
         })
       }
-  </script>
+    </script>
   </body>
 </html>
