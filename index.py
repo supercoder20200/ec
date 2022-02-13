@@ -146,7 +146,8 @@ class Point:
         y = slope * x + (self.y - slope * self.x)
         x %= self.p
         y %= self.p
-        return Point(self.p, x, -y)
+        return (x, -y)
+        #return Point(self.p, x, -y)
     
     def double(self):
         slope = (3 * (self.x ** 2) + A) * inverse_of(2 * self.y)
@@ -423,7 +424,7 @@ def get_compressed_key(coord):
         return '03' + hx
 
 
-def RValue(P,Q):
+def RValue1(P,Q):
     p = PValue
     Px, Py = P 
     Qx, Qy = Q
@@ -442,8 +443,30 @@ def RValue(P,Q):
 
     return (Rx,Ry)
 
+def RValue(P, Q):
+    Px, Py = P
+    Qx, Qy = Q
+
+    p1 = Point(PValue, Px, Py)
+    p2 = Point(PValue, Qx, Qy)
+
+    (x,y) = p1 + p2
+
+    return (x % PValue, y % PValue)
+
 def RValue_mod2p(P,Q):
-    p = 2 * NValue
+    Px, Py = P
+    Qx, Qy = Q
+
+    p1 = Point(PValue2, Px, Py)
+    p2 = Point(PValue2, Qx, Qy)
+
+    (x,y) = p1 + p2
+
+    return (x  % PValue, y % PValue)
+
+def RValue1_mod2p(P,Q):
+    p = 2 * PValue
     Px, Py = P 
     Qx, Qy = Q
 
