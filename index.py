@@ -463,7 +463,7 @@ def RValue_mod2p(P,Q):
 
     (x,y) = p1 + p2
 
-    return (x  % PValue, y % PValue)
+    return (x  % PValue2, y % PValue2)
 
 def RValue1_mod2p(P,Q):
     p = 2 * PValue
