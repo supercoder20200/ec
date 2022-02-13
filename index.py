@@ -443,7 +443,7 @@ def RValue(P,Q):
     return (Rx,Ry)
 
 def RValue_mod2p(P,Q):
-    p = PValue2
+    p = 2 * NValue
     Px, Py = P 
     Qx, Qy = Q
 
