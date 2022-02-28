@@ -424,24 +424,164 @@ def get_compressed_key(coord):
         return '03' + hx
 
 
-def RValue1(P,Q):
+def RValue1():
     p = PValue
-    Px, Py = P 
-    Qx, Qy = Q
+    #Px, Py = P 
+    #Qx, Qy = Q
+    '''
+        Test 3
+        1543E189FDF4328DE0D381C168FC24A4157B323618A8B848954F08D69184ADE3
+        x = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+        y = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+
+        +
+
+        565D1DC3988EE41586553FE46EE6F175A7C0A22314A1E864DB0332BBA083B042
+        x = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+        y = 26404976397782792208654192950566734405099242558120540310248048648562637353326
+    '''
+    #Test3
+    Px = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+    Py = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+    Qx = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+    Qy = 26404976397782792208654192950566734405099242558120540310248048648562637353326
 
     if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+        #Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+        Delta = (3 *  Px * Px )
+        print("Delta-0 = {}".format(Delta))
+
+        inv = inverse_mod(2 * Py, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-1 = {}".format(Delta))
     else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+        #Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+        Delta = (Py - Qy) 
+        print("Delta-2 = {}".format(Delta))
+
+        inv = inverse_mod(Px - Qx, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-3 = {}".format(Delta))
 
     Rx = ( Delta * Delta - Px - Qx ) % p
+    print("Rx = {}".format(Rx))
+
     Ry = Py + Delta * (Rx - Px)
-
-    print("RYRYRYRY: {}".format(Ry))
-
+    print("Ry-1 = {}".format(Ry))
+   
     Ry = -Ry % p
+    print("Ry-2 = {}".format(Ry))
 
     return (Rx,Ry)
+
+def RValue1_mod2p():
+    p = 2 * PValue
+    '''
+        Test 3
+        1543E189FDF4328DE0D381C168FC24A4157B323618A8B848954F08D69184ADE3
+        x = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+        y = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+
+        +
+
+        565D1DC3988EE41586553FE46EE6F175A7C0A22314A1E864DB0332BBA083B042
+        x = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+        y = 26404976397782792208654192950566734405099242558120540310248048648562637353326
+    '''
+    #Test3
+    Px = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+    Py = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+    Qx = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+    Qy = 26404976397782792208654192950566734405099242558120540310248048648562637353326
+
+    if Px == Qx:
+        #Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+        Delta = (3 *  Px * Px )
+        print("Delta-0 = {}".format(Delta))
+
+        inv = inverse_mod(2 * Py, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-1 = {}".format(Delta))
+    else:
+        #Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+        Delta = (Py - Qy) 
+        print("Delta-2 = {}".format(Delta))
+
+        inv = inverse_mod(Px - Qx, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-3 = {}".format(Delta))
+
+    Rx = ( Delta * Delta - Px - Qx ) % p
+    print("Rx = {}".format(Rx))
+
+    Ry = Py + Delta * (Rx - Px)
+    print("Ry-1 = {}".format(Ry))
+   
+    Ry = -Ry % p
+    print("Ry-2 = {}".format(Ry))
+
+    return (Rx,Ry)
+
+def RValue1_no_modp():
+    p = PValue
+    '''
+        Test 3
+        1543E189FDF4328DE0D381C168FC24A4157B323618A8B848954F08D69184ADE3
+        x = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+        y = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+
+        +
+
+        565D1DC3988EE41586553FE46EE6F175A7C0A22314A1E864DB0332BBA083B042
+        x = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+        y = 26404976397782792208654192950566734405099242558120540310248048648562637353326
+    '''
+    #Test3
+    Px = 90659819201786086632712812093525439922787265278409960745653921851223632181874
+    Py = 76236105781602925710363989762560393482863261107195715651091640076383975965140
+    Qx = 96325344453420136853251529731187724497408795511788904895294093459244939918654
+    Qy = 26404976397782792208654192950566734405099242558120540310248048648562637353326
+
+    if Px == Qx:
+        #Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, p)
+        Delta = (3 *  Px * Px )
+        print("Delta-0 = {}".format(Delta))
+
+        inv = inverse_mod(2 * Py, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-1 = {}".format(Delta))
+    else:
+        #Delta = (Py - Qy) * inverse_mod(Px - Qx, p)
+        Delta = (Py - Qy) 
+        print("Delta-2 = {}".format(Delta))
+
+        inv = inverse_mod(Px - Qx, p)
+        print("inv: {}".format(inv))
+
+        Delta *= inv
+        print("Delta-3 = {}".format(Delta))
+
+    Rx = ( Delta * Delta - Px - Qx )
+    print("Rx = {}".format(Rx))
+
+    Ry = Py + Delta * (Rx - Px)
+    print("Ry-1 = {}".format(Ry))
+   
+    Ry = -Ry
+    print("Ry-2 = {}".format(Ry))
+
+    return (Rx,Ry)
+
 
 def RValue(P, Q):
     Px, Py = P
@@ -452,43 +592,26 @@ def RValue(P, Q):
 
     (x,y) = p1 + p2
 
-    return (x % PValue, y % PValue)
+    return (x % PValue, y % PValue )
 
 def RValue_mod2p(P,Q):
     Px, Py = P
     Qx, Qy = Q
 
-    p1 = Point(PValue2, Px, Py)
-    p2 = Point(PValue2, Qx, Qy)
+    p1 = Point(2 * NValue, Px, Py)
+    p2 = Point(2 * NValue, Qx, Qy)
 
     (x,y) = p1 + p2
 
-    return (x  % PValue2, y % PValue2)
-
-def RValue1_mod2p(P,Q):
-    p = 2 * PValue
-    Px, Py = P 
-    Qx, Qy = Q
-
-    if Px == Qx:
-        Delta = (3 *  Px * Px ) * inverse_mod(2 * Py, PValue2)
-    else:
-        Delta = (Py - Qy) * inverse_mod(Px - Qx, PValue2)
-
-    Rx = ( Delta * Delta - Px - Qx ) % PValue2
-    Ry = Py + Delta * (Rx - Px)
-
-    print("RY2RY2RY2RY22: {}".format(Ry))
-
-    Ry = -Ry % PValue2
-    
-    return (Rx,Ry)
+    return (x % PValue , y % PValue )
 
 def atZero(P,Q):
     rVal = RValue_mod2p(P,Q)
     Rx, Ry = rVal 
 
-    if Rx > NValue or Ry > NValue:
+    T1 = 54471083016396624140318862818537878273881801691469295999863093677033270108678
+    T2 = 80478451357263941651379549121933213189533405107104786161611916381943362666422
+    if Rx > HValue or Ry > HValue:
         return True
     else:
         return False
@@ -634,13 +757,24 @@ def hex_public_to_public_addresses(hex_publics):
 
 if __name__ == '__main__':
 
-    #uncompressed public key
-    p1key = point_to_key( (P1x, P1y) )
-    at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
+    print("-------------------------modp----------------------------------")
+    
+    RValue1()
+
+    print("-------------------------mod2p----------------------------------")
+
+    RValue1_mod2p()
+
+    print("-------------------------without mod----------------------------------")
+
+    RValue1_no_modp()
+
+    #p1key = point_to_key( (P1x, P1y) )
+    #at = '04417A55413D948D79F5194F1F2CD670F078CB7F6D3A2F2B12E8CDF9A3268CAD3BAAA3251D2587D4E57ACBCE7991B72355EA33C44DBCF260D09B6C921879A61AA4'
     #print("Test P1 point_to_key() : {} ".format( point_to_key( (P1x, P1y) ) ))
 
-    k = 0
-    point = multiply(k, (Gx, Gy))
+    #k = 0
+    #point = multiply(k, (Gx, Gy))
     
    
 
