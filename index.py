@@ -605,8 +605,8 @@ def RValue_mod2p(P,Q):
     Px, Py = P
     Qx, Qy = Q
 
-    p1 = Point(2 * NValue, Px, Py)
-    p2 = Point(2 * NValue, Qx, Qy)
+    p1 = Point(2 * PValue, Px, Py)
+    p2 = Point(2 * PValue, Qx, Qy)
 
     (x,y) = p1 + p2
 
